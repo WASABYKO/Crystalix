@@ -1,0 +1,290 @@
+/* Стили для результатов поиска пользователей - УЛУЧШЕННАЯ ВЕРСИЯ */
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    border-radius: 3px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 16px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    transition: all var(--transition-normal);
+    animation: resultFadeIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* Stagger анимация для элементов */
+.search-result-item:nth-child(1) { animation-delay: 0.05s; }
+.search-result-item:nth-child(2) { animation-delay: 0.1s; }
+.search-result-item:nth-child(3) { animation-delay: 0.15s; }
+.search-result-item:nth-child(4) { animation-delay: 0.2s; }
+.search-result-item:nth-child(5) { animation-delay: 0.25s; }
+.search-result-item:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes resultFadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-result-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.search-result-item:active {
+    transform: scale(0.98) translateX(2px);
+}
+
+/* Аватарка пользователя в результатах поиска */
+.search-result-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.search-result-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-result-avatar .avatar-initials {
+    font-size: inherit;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Градиенты для аватарок */
+.search-result-avatar.avatar-gradient-1 {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.search-result-avatar.avatar-gradient-2 {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.search-result-avatar.avatar-gradient-3 {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.search-result-avatar.avatar-gradient-4 {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.search-result-avatar.avatar-gradient-5 {
+    background: linear-gradient(135deg, #ec4899, #be185d);
+}
+
+.search-result-avatar.avatar-gradient-6 {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.search-result-avatar.avatar-gradient-7 {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.search-result-avatar.avatar-gradient-8 {
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+}
+
+/* Информация о пользователе */
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 16px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-email {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-id {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 2px 8px;
+    background: var(--surface);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Действия поиска */
+.search-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.search-actions .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* Стили для состояний */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-muted);
+}
+
+.loading-state .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--glass-border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--danger);
+}
+
+.error-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
+.empty-state-small {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state-small i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.3;
+}
+
+.text-muted {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 576px) {
+    .search-results {
+        max-height: 300px;
+    }
+
+    .search-result-item {
+        padding: 12px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .search-result-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+
+    .search-result-name {
+        font-size: 14px;
+    }
+
+    .search-result-email {
+        font-size: 12px;
+    }
+
+    .search-result-id {
+        font-size: 11px;
+    }
+
+    .search-actions {
+        width: 100%;
+        flex-direction: row;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .search-actions .btn {
+        flex: 1;
+        padding: 8px 12px;
+        font-size: 12px;
+        justify-content: center;
+    }
+}
+
+/* Светлая тема */
+[data-theme="light"] .search-result-name,
+.theme-light .search-result-name {
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .search-result-email,
+.theme-light .search-result-email {
+    color: rgba(26, 26, 46, 0.6);
+}
+
+[data-theme="light"] .search-result-id,
+.theme-light .search-result-id {
+    color: rgba(26, 26, 46, 0.5);
+}

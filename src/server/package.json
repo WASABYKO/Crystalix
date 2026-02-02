@@ -1,0 +1,22 @@
+{
+  "name": "techtariff-sqlite",
+  "version": "1.0.0",
+  "description": "TechTariff с SQLite базой данных",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "reset-db": "rm -f server/techtariff.db && npm start",
+    "backup-db": "cp server/techtariff.db server/backup-$(date +%Y%m%d-%H%M%S).db",
+    "view-db": "sqlite3 server/techtariff.db"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.5.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

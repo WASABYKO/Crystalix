@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет | TechTariff</title>
+    
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https: http://localhost:3000;
+        connect-src 'self' ws: wss: ws://localhost:3000;
+    ">
+    
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Фон личного кабинета -->
+    <div class="dashboard-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка личного кабинета</p>
+            <p id="loaderMessage">Проверка авторизации...</p>
+        </div>
+    </div>
+
+    <header id="siteHeader"></header>
+
+    <main class="dashboard-main">
+        <!-- Hero секция профиля -->
+        <section class="profile-hero">
+            <div class="profile-hero-bg"></div>
+            <div class="container">
+                <div class="profile-hero-content">
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar-large" id="userAvatarLarge">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="avatar-edit-btn" id="changeAvatarBtn" title="Изменить аватар">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name" id="userWelcomeTitle">Добро пожаловать!</h1>
+                        <p class="profile-email" id="userEmail">Загрузка данных...</p>
+                        <div class="profile-badges">
+                            <span class="status-badge" id="userStatus">
+                                <i class="fas fa-check-circle"></i> Активен
+                            </span>
+                            <span class="tariff-badge" id="userTariffBadge">
+                                <i class="fas fa-crown"></i> Бесплатный
+                            </span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn btn-primary" id="upgradeBtn">
+                            <i class="fas fa-rocket"></i> Улучшить тариф
+                        </button>
+                        <button class="btn btn-outline" id="supportBtn">
+                            <i class="fas fa-headset"></i> Поддержка
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Основной контент -->
+        <section class="dashboard-content-section">
+            <div class="container">
+                <div class="dashboard-layout">
+                    <!-- Левая колонка - навигация -->
+                    <aside class="dashboard-aside">
+                        <nav class="dashboard-nav">
+                            <ul>
+                                <li>
+                                    <a href="#profile" class="nav-item active" data-tab="profile">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span>Профиль</span>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#subscription" class="nav-item" data-tab="subscription">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span>Подписка</span>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#activity" class="nav-item" data-tab="activity">
+                                        <i class="fas fa-history"></i>
+                                        <span>Активность</span>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#security" class="nav-item" data-tab="security">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>Безопасность</span>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#settings" class="nav-item" data-tab="settings">
+                                        <i class="fas fa-cog"></i>
+                                        <span>Настройки</span>
+                                        <div class="nav-indicator"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        
+                        <div class="dashboard-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 id="daysWithUs">0</h4>
+                                    <p>Дней с нами</p>
+                                </div>
+                                <div class="stat-bg-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h4 id="activityCount">0</h4>
+                                    <p>Активностей</p>
+                                </div>
+                                <div class="stat-bg-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                    
+                    <!-- Правая колонка - контент -->
+                    <div class="dashboard-content">
+                        <!-- Профиль -->
+                        <div class="dashboard-tab active" id="profileTab">
+                            <div class="tab-header">
+                                <div class="tab-header-content">
+                                    <h2><i class="fas fa-id-card"></i> Личный профиль</h2>
+                                    <p>Управление вашими персональными данными</p>
+                                </div>
+                                <button class="btn btn-outline btn-sm" id="editProfileBtn">
+                                    <i class="fas fa-edit"></i> Редактировать
+                                </button>
+                            </div>
+                            <div class="profile-card">
+                                <div class="profile-details">
+                                    <div class="detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-id-badge"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <span class="detail-label">Ваш ID</span>
+                                            <span class="detail-value" id="userIdDisplay">
+                                                <code id="userId">Загрузка...</code>
+                                                <button class="btn-copy" id="copyUserIdBtn" title="Копировать">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <span class="detail-label">Имя</span>
+                                            <span class="detail-value" id="userName">Загрузка...</span>
+                                        </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <span class="detail-label">Email</span>
+                                            <span class="detail-value" id="userEmailDisplay">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <span class="detail-label">Дата регистрации</span>
+                                            <span class="detail-value" id="userRegDate">-</span>
+                                        </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <span class="detail-label">Последний вход</span>
+                                            <span class="detail-value" id="userLastLogin">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Подписка -->
+                        <div class="dashboard-tab" id="subscriptionTab">
+                            <div class="tab-header">
+                                <div class="tab-header-content">
+                                    <h2><i class="fas fa-credit-card"></i> Ваша подписка</h2>
+                                    <p>Управление тарифным планом и платежами</p>
+                                </div>
+                                <button class="btn btn-primary btn-sm" id="changeTariffBtn">
+                                    <i class="fas fa-exchange-alt"></i> Сменить тариф
+                                </button>
+                            </div>
+                            <div class="subscription-info" id="subscriptionInfo">
+                                <div class="loading-info">
+                                    <div class="loading-spinner"></div>
+                                    <p>Загрузка информации о подписке...</p>
+                                </div>
+                            </div>
+                            <div class="payment-history">
+                                <h3><i class="fas fa-history"></i> История платежей</h3>
+                                <div class="payments-list" id="paymentsList">
+                                    <div class="empty-payments">
+                                        <i class="fas fa-receipt"></i>
+                                        <p>История платежей пуста</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Активность -->
+                        <div class="dashboard-tab" id="activityTab">
+                            <div class="tab-header">
+                                <div class="tab-header-content">
+                                    <h2><i class="fas fa-history"></i> История активности</h2>
+                                    <p>Ваши действия в системе</p>
+                                </div>
+                                <button class="btn btn-outline btn-sm" id="refreshActivityBtn">
+                                    <i class="fas fa-sync-alt"></i> Обновить
+                                </button>
+                            </div>
+                            <div class="activity-filters">
+                                <select class="filter-select" id="activityFilter">
+                                    <option value="all">Вся активность</option>
+                                    <option value="login">Входы в систему</option>
+                                    <option value="payment">Платежи</option>
+                                    <option value="settings">Изменения настроек</option>
+                                </select>
+                                <input type="date" class="date-filter" id="activityDate">
+                            </div>
+                            <div class="activity-list" id="activityList">
+                                <div class="empty-activity">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <p>Нет данных об активности</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Безопасность -->
+                        <div class="dashboard-tab" id="securityTab">
+                            <div class="tab-header">
+                                <div class="tab-header-content">
+                                    <h2><i class="fas fa-shield-alt"></i> Безопасность</h2>
+                                    <p>Защита вашего аккаунта</p>
+                                </div>
+                            </div>
+                            <div class="security-settings">
+                                <div class="security-card">
+                                    <div class="security-item">
+                                        <div class="security-icon">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </div>
+                                        <div class="security-info">
+                                            <h4>Двухфакторная аутентификация</h4>
+                                            <p>Дополнительная защита вашего аккаунта через код в приложении</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="twoFactorToggle">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="security-card">
+                                    <div class="security-item">
+                                        <div class="security-icon">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+                                        <div class="security-info">
+                                            <h4>Изменить пароль</h4>
+                                            <p>Рекомендуется менять пароль каждые 90 дней</p>
+                                        </div>
+                                        <button class="btn btn-outline" id="changePasswordBtn">
+                                            <i class="fas fa-key"></i> Изменить
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="security-card">
+                                    <div class="security-item">
+                                        <div class="security-icon">
+                                            <i class="fas fa-desktop"></i>
+                                        </div>
+                                        <div class="security-info">
+                                            <h4>Активные сессии</h4>
+                                            <p>Управление устройствами с доступом к аккаунту</p>
+                                        </div>
+                                        <button class="btn btn-outline" id="manageSessionsBtn">
+                                            <i class="fas fa-list"></i> Управление
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Настройки -->
+                        <div class="dashboard-tab" id="settingsTab">
+                            <div class="tab-header">
+                                <div class="tab-header-content">
+                                    <h2><i class="fas fa-cog"></i> Настройки</h2>
+                                    <p>Персонализация интерфейса</p>
+                                </div>
+                            </div>
+                            <div class="settings-grid">
+                                <div class="setting-card">
+                                    <div class="setting-item">
+                                        <div class="setting-icon">
+                                            <i class="fas fa-bell"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h4>Уведомления</h4>
+                                            <p>Настройка способов получения уведомлений</p>
+                                        </div>
+                                        <a href="#" class="setting-link">
+                                            Настроить <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="setting-card">
+                                    <div class="setting-item">
+                                        <div class="setting-icon">
+                                            <i class="fas fa-globe"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h4>Язык интерфейса</h4>
+                                            <p>Выберите предпочитаемый язык</p>
+                                        </div>
+                                        <select class="language-select">
+                                            <option value="ru">Русский</option>
+                                            <option value="en">English</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="setting-card">
+                                    <div class="setting-item">
+                                        <div class="setting-icon">
+                                            <i class="fas fa-moon"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h4>Тема оформления</h4>
+                                            <p>Тёмная или светлая тема интерфейса</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="themeToggle" checked>
+                                            <span class="toggle-slider"></span>
+                                            <span class="toggle-label">Тёмная</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting-card danger-zone">
+                                    <div class="setting-item">
+                                        <div class="setting-icon danger">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </div>
+                                        <div class="setting-info">
+                                            <h4>Удаление аккаунта</h4>
+                                            <p>Это действие необратимо - все данные будут удалены</p>
+                                        </div>
+                                        <button class="btn btn-danger" id="deleteAccountBtn">
+                                            <i class="fas fa-trash"></i> Удалить
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="siteFooter"></footer>
+
+    <!-- Модальные окна -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Изменить пароль</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Текущий пароль</label>
+                        <input type="password" class="form-control" id="currentPassword" placeholder="Введите текущий пароль">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock-open"></i> Новый пароль</label>
+                        <input type="password" class="form-control" id="newPassword" placeholder="Введите новый пароль">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock-open"></i> Подтвердите пароль</label>
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Повторите новый пароль">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="avatarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-camera"></i> Изменить аватар</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-preview-container">
+                    <div class="avatar-preview-large" id="avatarPreview">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="avatarInput" accept="image/*" hidden>
+                    <div class="upload-placeholder" onclick="document.getElementById('avatarInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Нажмите или перетащите изображение</p>
+                        <span>JPG, PNG, GIF (макс. 5 МБ)</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" id="saveAvatarBtn" disabled>
+                    <i class="fas fa-save"></i> Сохранить аватар
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sessionsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-desktop"></i> Активные сессии</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="sessions-list" id="sessionsList">
+                    <!-- Сессии загрузятся через JS -->
+                </div>
+                <button class="btn btn-danger btn-block" id="logoutAllBtn" style="margin-top: 16px;">
+                    <i class="fas fa-sign-out-alt"></i> Выйти со всех устройств
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="/js/hashStorage.js"></script>
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/components/header.js"></script>
+    <script src="/js/components/footer.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script src="/js/app.js"></script>
+
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            App.initDashboardPage();
+        });
+    </script>
+</body>
+</html>

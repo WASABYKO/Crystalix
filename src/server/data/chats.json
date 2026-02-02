@@ -1,0 +1,142 @@
+[
+  {
+    "id": "chat_1769883847527",
+    "type": "private",
+    "participants": [
+      "user_1769866446241_mjw5hjix",
+      "user_1769880646655_b0zlyz0k"
+    ],
+    "createdAt": "2026-01-31T18:24:07.527Z",
+    "lastActivity": "2026-02-02T17:21:30.962Z"
+  },
+  {
+    "id": "chat_1769885859627",
+    "type": "private",
+    "participants": [
+      "user_1769866446241_mjw5hjix",
+      "user_1769883134044_depjg2jv"
+    ],
+    "createdAt": "2026-01-31T18:57:39.627Z",
+    "lastActivity": "2026-01-31T18:57:39.627Z"
+  },
+  {
+    "id": "chat_1769885860687",
+    "type": "private",
+    "participants": [
+      "user_1769866446241_mjw5hjix",
+      "friend_1769885610997"
+    ],
+    "createdAt": "2026-01-31T18:57:40.687Z",
+    "lastActivity": "2026-01-31T18:57:40.687Z"
+  },
+  {
+    "id": "chat_1769885861534",
+    "type": "private",
+    "participants": [
+      "user_1769866446241_mjw5hjix",
+      "friend_1769885498135"
+    ],
+    "createdAt": "2026-01-31T18:57:41.534Z",
+    "lastActivity": "2026-01-31T18:57:41.534Z"
+  },
+  {
+    "id": "chat_1769965766378",
+    "type": "private",
+    "participants": [
+      "user_1769877757926_vt1ab1gl",
+      "user_1769866446241_mjw5hjix"
+    ],
+    "createdAt": "2026-02-01T17:09:26.378Z",
+    "lastActivity": "2026-02-01T23:03:15.598Z"
+  },
+  {
+    "id": "chat_1769973733926",
+    "type": "private",
+    "participants": [
+      "user_1769877757926_vt1ab1gl",
+      "friend_1769965764550"
+    ],
+    "createdAt": "2026-02-01T19:22:13.926Z",
+    "lastActivity": "2026-02-01T19:22:54.660Z"
+  },
+  {
+    "id": "chat_1769974212975",
+    "type": "private",
+    "participants": [
+      "user_1769880646655_b0zlyz0k",
+      "friend_1769885498135"
+    ],
+    "createdAt": "2026-02-01T19:30:12.976Z",
+    "lastActivity": "2026-02-01T19:30:12.976Z"
+  },
+  {
+    "id": "chat_1769974242609",
+    "type": "private",
+    "participants": [
+      "user_1769880646655_b0zlyz0k",
+      "friend_1769885610997"
+    ],
+    "createdAt": "2026-02-01T19:30:42.610Z",
+    "lastActivity": "2026-02-01T19:30:42.610Z"
+  },
+  {
+    "id": "chat_1769974243205",
+    "type": "private",
+    "participants": [
+      "user_1769880646655_b0zlyz0k",
+      "friend_1769885845077"
+    ],
+    "createdAt": "2026-02-01T19:30:43.205Z",
+    "lastActivity": "2026-02-01T19:30:43.205Z"
+  },
+  {
+    "id": "chat_1769986707139",
+    "type": "private",
+    "participants": [
+      "user_1769877757926_vt1ab1gl",
+      "user_1769880646655_b0zlyz0k"
+    ],
+    "createdAt": "2026-02-01T22:58:27.139Z",
+    "lastActivity": "2026-02-01T22:58:32.137Z"
+  },
+  {
+    "id": "chat_1769988802343",
+    "type": "private",
+    "participants": [
+      "user_1769880646655_b0zlyz0k",
+      "user_1769988660261_n1osjy6s"
+    ],
+    "createdAt": "2026-02-01T23:33:22.343Z",
+    "lastActivity": "2026-02-01T23:45:13.569Z"
+  },
+  {
+    "id": "chat_1770029874689",
+    "type": "private",
+    "participants": [
+      "user_1769866446241_mjw5hjix",
+      "user_1770029679497_ot0mdqkt"
+    ],
+    "createdAt": "2026-02-02T10:57:54.689Z",
+    "lastActivity": "2026-02-02T10:57:57.923Z"
+  },
+  {
+    "id": "chat_1770030367525",
+    "type": "private",
+    "participants": [
+      "user_1770029679497_ot0mdqkt",
+      "user_1769880646655_b0zlyz0k"
+    ],
+    "createdAt": "2026-02-02T11:06:07.525Z",
+    "lastActivity": "2026-02-02T11:08:01.618Z"
+  },
+  {
+    "id": "chat_1770033582326",
+    "type": "private",
+    "participants": [
+      "user_1769880646655_b0zlyz0k",
+      "user_1770033530131_qjdthwwf"
+    ],
+    "createdAt": "2026-02-02T11:59:42.326Z",
+    "lastActivity": "2026-02-02T12:09:40.458Z"
+  }
+]

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Tests - Integration Tests</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00d9ff;
+        }
+        
+        .test-section {
+            background: #16213e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #0f3460;
+        }
+        
+        .test-section h2 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: #0f3460;
+        }
+        
+        .test-item.pass {
+            border-left: 4px solid #00ff88;
+        }
+        
+        .test-item.fail {
+            border-left: 4px solid #ff4444;
+        }
+        
+        .test-item.pending {
+            border-left: 4px solid #ffaa00;
+        }
+        
+        .test-name {
+            flex: 1;
+            font-size: 0.9em;
+        }
+        
+        .test-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+        
+        .pass .test-status {
+            background: #00ff88;
+            color: #1a1a2e;
+        }
+        
+        .fail .test-status {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .pending .test-status {
+            background: #ffaa00;
+            color: #1a1a2e;
+        }
+        
+        .test-details {
+            margin-left: 15px;
+            font-size: 0.8em;
+            color: #888;
+        }
+        
+        .summary {
+            background: #0f3460;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .summary h3 {
+            margin-bottom: 15px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .stat.pass .stat-value {
+            color: #00ff88;
+        }
+        
+        .stat.fail .stat-value {
+            color: #ff4444;
+        }
+        
+        .stat.pending .stat-value {
+            color: #ffaa00;
+        }
+        
+        .btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #ff6b6b;
+        }
+        
+        .btn-group {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .console-output {
+            background: #0a0a1a;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.8em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Integration Tests</h1>
+        
+        <div id="test-results"></div>
+        
+        <div class="summary">
+            <h3>Test Summary</h3>
+            <div class="summary-stats">
+                <div class="stat pass">
+                    <div class="stat-value" id="pass-count">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat fail">
+                    <div class="stat-value" id="fail-count">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat pending">
+                    <div class="stat-value" id="pending-count">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="runAllTests()">Run All Tests</button>
+                <button class="btn" onclick="runFailingTests()">Run Failing</button>
+                <button class="btn" onclick="clearResults()">Clear Results</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div class="console-output" id="console-output">Waiting for test output...</div>
+        </div>
+    </div>
+    
+    <script src="hashStorage.js"></script>
+    <script src="managers/SafeInitializer.js"></script>
+    <script src="managers/RetryManager.js"></script>
+    <script src="managers/ConnectionManager.js"></script>
+    <script src="managers/WebSocketManager.js"></script>
+    <script src="managers/AuthManager.js"></script>
+    <script src="managers/errorHandler.js"></script>
+    <script src="tests/testRunner.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+[
+  {
+    "id": "user_1769866446241_mjw5hjix",
+    "name": "Егор",
+    "email": "egor.markot@gmail.com",
+    "password_hash": "$2b$10$ES2G3AMpkAzP2OT0IY7Wa.zssGh.Jmqxq90rtpOntXneatCuwOBCq",
+    "avatar_color": "#ffa502",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-01-31T13:34:06.317Z",
+    "last_login": "2026-01-31T13:34:06.317Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1769866446241_mjw5hjix_1769894141227_763c69ec7a064257.jpg",
+      "updatedAt": "2026-01-31T21:15:41.229Z"
+    }
+  },
+  {
+    "id": "user_1769877757926_vt1ab1gl",
+    "name": "igor",
+    "email": "gorgorigor7@gmail.com",
+    "password_hash": "$2a$10$.mxvTf4tQrkHKuSqoOHe5u/tZK14wu2rf0u2nfVyh44EGDt997Orm",
+    "avatar_color": "#7bed9f",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-01-31T16:42:37.987Z",
+    "last_login": "2026-01-31T16:42:37.988Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1769877757926_vt1ab1gl_1769979828597_f3c1055c75ea580d.jpg",
+      "updatedAt": "2026-02-01T21:03:48.605Z"
+    }
+  },
+  {
+    "id": "user_1769880646655_b0zlyz0k",
+    "name": "wasaby",
+    "email": "Wasaby.so2@gmail.com",
+    "password_hash": "$2a$10$NB83k0EDdAvqZVzreY0Ho.9AF4scqJcy94VsnYY1lgTvqduqt9EFu",
+    "avatar_color": "#00ccff",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-01-31T17:30:46.734Z",
+    "last_login": "2026-01-31T17:30:46.734Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1769880646655_b0zlyz0k_1769893951134_2db61ad0eff45185.jpg",
+      "updatedAt": "2026-01-31T21:12:31.137Z"
+    }
+  },
+  {
+    "id": "user_1769962536844_wiub2x0w",
+    "name": "huisos",
+    "email": "retretret453@yandex.ru",
+    "password_hash": "$2a$10$gHTHdHMpz57kkvCBfGMmSOb8QhhhMqNlfVYVYGJtZaQnXvybganM2",
+    "avatar_color": "#ff6b6b",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-01T16:15:36.910Z",
+    "last_login": "2026-02-01T16:15:36.910Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1769962536844_wiub2x0w_1769962679431_0cc77d30bbba22c9.jpg",
+      "updatedAt": "2026-02-01T16:17:59.436Z"
+    }
+  },
+  {
+    "id": "user_1769988660261_n1osjy6s",
+    "name": "Lexa",
+    "email": "allen_0111@mail.ry",
+    "password_hash": "$2a$10$4czras31bhbxt9IiPKqYWOUnsNst6iFCi8ZQMW06dzTyEuwg8nKMa",
+    "avatar_color": "#00ccff",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-01T23:31:00.326Z",
+    "last_login": "2026-02-01T23:31:00.326Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1769988660261_n1osjy6s_1769988740083_4bce21b49fc9c552.jpg",
+      "updatedAt": "2026-02-01T23:32:20.438Z"
+    }
+  },
+  {
+    "id": "user_1770029679497_ot0mdqkt",
+    "name": "ʍоᴩᴋоʙᴋᴀ #⋆˚🐾˖°",
+    "email": "qwq444705@gmail.com",
+    "password_hash": "$2a$10$b93KY1XOyCeMjAZGcLwAAuGpK91vWHZkT1r0JJr2x4LqBFad2WgI2",
+    "avatar_color": "#00ccff",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-02T10:54:39.562Z",
+    "last_login": "2026-02-02T10:54:39.562Z"
+  },
+  {
+    "id": "user_1770032338418_ahyq2cbc",
+    "name": "Екатерина",
+    "email": "9280427307@yandex.ru",
+    "password_hash": "$2a$10$ekkQAl1.frh2BTIWXqGSv.Of2uGXUUHgG/Nnawq5og9Kb7NGjLNne",
+    "avatar_color": "#00ccff",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-02T11:38:58.529Z",
+    "last_login": "2026-02-02T11:38:58.529Z"
+  },
+  {
+    "id": "user_1770033530131_qjdthwwf",
+    "name": "захар",
+    "email": "anikik.com@gmail.com",
+    "password_hash": "$2a$10$4BPdP8/PW7cMrIqPIsu1U.GmuQhtPAVWMU4O6o0wfM8n2KDZjkK3y",
+    "avatar_color": "#00ffaa",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-02T11:58:50.194Z",
+    "last_login": "2026-02-02T11:58:50.194Z",
+    "avatar": {
+      "original": "/uploads/avatars/avatar_user_1770033530131_qjdthwwf_1770033572448_878e09a2ca94e4fb.jpg",
+      "updatedAt": "2026-02-02T11:59:32.543Z"
+    }
+  },
+  {
+    "id": "user_1770040893721_401qtpn9",
+    "name": "Test",
+    "email": "test@test.com",
+    "password_hash": "$2a$10$gF2ncShVFHie1zryBN.sJ.HV92eLOTGYWiK1oPABOneco3bi65tQy",
+    "avatar_color": "#ff6b6b",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-02-02T14:01:33.779Z",
+    "last_login": "2026-02-02T14:01:33.779Z"
+  }
+]

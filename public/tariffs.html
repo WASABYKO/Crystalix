@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тарифы | TechTariff</title>
+
+    <!-- CSP-мета: разрешает внешние CDN и inline-скрипты -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https:;
+        connect-src 'self' ws: wss: ws://localhost:3000 http://localhost:3000;
+    ">
+    
+    <!-- Локальные стили -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+    
+    <!-- Внешние библиотеки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+        
+        <div class="loader">
+            <svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+                <!-- SVG лоадер -->
+            </svg>
+        </div>
+        
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка каталога тарифов</p>
+            <p id="loaderMessage">Загрузка данных о тарифах...</p>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Шапка сайта -->
+    <header id="siteHeader"></header>
+
+    <!-- Основной контент страницы тарифов -->
+    <main class="main-content">
+        <!-- Заголовок -->
+        <section class="page-header-section">
+            <div class="container">
+                <div class="page-header-content">
+                    <h1 class="page-title">Наши тарифы</h1>
+                    <p class="page-subtitle">Выберите оптимальное решение для вашего бизнеса</p>
+                    <div class="page-header-badge">
+                        <i class="fas fa-crown"></i>
+                        <span>Все тарифы можно протестировать бесплатно</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Тарифы -->
+        <section class="tariffs-section">
+            <div class="container">
+                <div class="tariffs-switch">
+                    <button class="switch-btn active" data-period="monthly">Ежемесячная оплата</button>
+                    <button class="switch-btn" data-period="yearly">Годовая оплата <span class="save-badge">Экономия 20%</span></button>
+                </div>
+                
+                <div class="tariffs-container" id="tariffsContainer">
+                    <!-- Тарифы загружаются через JavaScript -->
+                    <div class="loading-tariffs">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <p>Загрузка тарифов...</p>
+                    </div>
+                </div>
+                
+                <div class="tariffs-comparison">
+                    <h3>Сравнение тарифов</h3>
+                    <div class="comparison-table" id="comparisonTable">
+                        <!-- Таблица сравнения -->
+                        <div class="loading-comparison">
+                            <p>Загрузка таблицы сравнения...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Часто задаваемые вопросы</h2>
+                    <p>Ответы на популярные вопросы о тарифах</p>
+                </div>
+                
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Можно ли изменить тариф после покупки?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Да, вы можете изменить тариф в любой момент. При переходе на более дорогой тариф разница будет списана пропорционально оставшемуся периоду.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Есть ли бесплатный пробный период?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Да, все тарифы доступны для бесплатного тестирования в течение 14 дней. Никакая карта не требуется для начала пробного периода.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Как происходит оплата?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Мы принимаем все основные банковские карты (Visa, MasterCard, МИР), а также электронные платежи через ЮMoney и QIWI.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Можно ли отменить подписку?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Да, вы можете отменить подписку в любой момент в личном кабинете. Доступ к функциям сохранится до конца оплаченного периода.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Остались вопросы?</h2>
+                    <p>Свяжитесь с нашей командой поддержки для получения персональной консультации</p>
+                    <div class="cta-buttons">
+                        <a href="/support.html" class="btn btn-primary btn-lg glow">
+                            <i class="fas fa-comments"></i> Написать в поддержку
+                        </a>
+                        <a href="/dashboard.html" class="btn btn-outline btn-lg">
+                            <i class="fas fa-user-circle"></i> Личный кабинет
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал сайта -->
+    <footer id="siteFooter"></footer>
+
+    <!-- Скрипты -->
+    <script src="/js/hashStorage.js"></script>
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/components/header.js"></script>
+    <script src="/js/components/footer.js"></script>
+    <script src="/js/app.js"></script>
+
+    <!-- Менеджеры -->
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+    
+    <!-- Inline-скрипт -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            App.initTariffsPage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "friend_1770049574348",
+    "user1": "user_1769866446241_mjw5hjix",
+    "user2": "user_1769880646655_b0zlyz0k",
+    "status": "accepted",
+    "acceptedAt": "2026-02-02T16:26:14.348Z"
+  },
+  {
+    "id": "friend_1770050703525",
+    "user1": "user_1769866446241_mjw5hjix",
+    "user2": "user_1769880646655_b0zlyz0k",
+    "status": "accepted",
+    "acceptedAt": "2026-02-02T16:45:03.525Z"
+  }
+]

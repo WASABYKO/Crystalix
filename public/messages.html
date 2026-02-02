@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер | TechTariff</title>
+    
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https: http://localhost:3000;
+        connect-src 'self' ws: wss: ws://localhost:3000 http://localhost:3000;
+        frame-ancestors 'none';
+    ">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+    <link rel="stylesheet" href="/css/messages.css">
+    <link rel="stylesheet" href="/css/search-results.css">
+    <link rel="stylesheet" href="/css/calls.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Переопределения для кастомных элементов */
+        .chat-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            font-size: 18px;
+        }
+        
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .right-panel-avatar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        
+        .avatar-initials {
+            font-size: inherit;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Цветовые градиенты для аватаров */
+        .avatar-gradient-1 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .avatar-gradient-2 { background: linear-gradient(135deg, #10b981, #059669); }
+        .avatar-gradient-3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .avatar-gradient-4 { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .avatar-gradient-5 { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .avatar-gradient-6 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .avatar-gradient-7 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .avatar-gradient-8 { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        
+        /* Кнопка возврата в личный кабинет */
+        .cabinet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            font-family: inherit;
+            text-decoration: none;
+        }
+        
+        .cabinet-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(-2px);
+        }
+        
+        .cabinet-btn i {
+            font-size: 14px;
+        }
+        
+        /* Кнопка профиля */
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .profile-btn:hover {
+            background: var(--surface-hover);
+        }
+        
+        .profile-btn .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .profile-btn .name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .profile-btn .icon {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip link для доступности -->
+    <a href="#mainContent" class="skip-link">Перейти к основному контенту</a>
+
+    <!-- Фон мессенджера -->
+    <div class="messenger-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Переключатель темы -->
+    <div class="theme-toggle">
+        <button class="btn-icon" id="themeToggle" aria-label="Переключить тему" title="Сменить тему">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+    
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка мессенджера</p>
+            <p id="loaderMessage">Инициализация...</p>
+        </div>
+    </div>
+
+    <!-- Основной контейнер -->
+    <main class="messages-container" id="mainContent" role="main" aria-label="Основной интерфейс мессенджера">
+        <!-- Левый сайдбар - Список чатов и друзей -->
+        <aside class="messages-sidebar" id="messagesSidebar" role="complementary" aria-label="Список чатов">
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Закрыть меню" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="sidebar-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 style="margin: 0;"><i class="fas fa-comment-dots"></i> Мессенджер</h2>
+                    <!-- Кнопка возврата в личный кабинет -->
+                    <a href="/dashboard.html" class="cabinet-btn" title="Вернуться в личный кабинет" aria-label="Вернуться в личный кабинет">
+                        <i class="fas fa-user"></i>
+                        <span>Кабинет</span>
+                    </a>
+                </div>
+                <div class="sidebar-actions">
+                    <button id="newChatBtn" class="btn btn-primary btn-sm" aria-label="Создать новый чат">
+                        <i class="fas fa-plus"></i> Новый чат
+                    </button>
+                    <button id="searchUsersBtn" class="btn-icon" title="Поиск" aria-label="Поиск пользователей">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="chatSearch" placeholder="Поиск чатов..." class="search-input" 
+                       aria-label="Поиск чатов">
+            </div>
+
+            <nav class="sidebar-tabs" role="tablist" aria-label="Разделы мессенджера">
+                <button class="tab-btn active" data-tab="chats" role="tab" aria-selected="true" aria-controls="chatsTab">
+                    <i class="fas fa-comments"></i> Чаты
+                </button>
+                <button class="tab-btn" data-tab="friends" role="tab" aria-selected="false" aria-controls="friendsTab">
+                    <i class="fas fa-user-friends"></i> Друзья
+                </button>
+                <button class="tab-btn" data-tab="requests" role="tab" aria-selected="false" aria-controls="requestsTab">
+                    <i class="fas fa-user-plus"></i> Заявки
+                    <span class="chat-badge" id="requestsBadge">2</span>
+                </button>
+            </nav>
+
+            <!-- Вкладка Чаты -->
+            <div class="tab-content active" id="chatsTab" role="tabpanel" aria-labelledby="chats-tab">
+                <div class="chats-list" id="chatsList" role="list" aria-label="Список чатов">
+                    <!-- Чаты будут загружены через JavaScript -->
+                </div>
+            </div>
+
+            <!-- Вкладка Друзья -->
+            <div class="tab-content" id="friendsTab" role="tabpanel" aria-labelledby="friends-tab">
+                <div class="friends-list" id="friendsList" role="list" aria-label="Список друзей">
+                    <!-- Друзья будут загружены через JavaScript -->
+                </div>
+            </div>
+
+            <!-- Вкладка Заявки -->
+            <div class="tab-content" id="requestsTab" role="tabpanel" aria-labelledby="requests-tab">
+                <div class="requests-tabs">
+                    <button class="sub-tab-btn active" data-subtab="incoming" aria-pressed="true">
+                        <i class="fas fa-arrow-down"></i> Входящие
+                        <span class="requests-count-badge" id="incomingRequestsCount" style="display: none;">0</span>
+                    </button>
+                    <button class="sub-tab-btn" data-subtab="outgoing" aria-pressed="false">
+                        <i class="fas fa-arrow-up"></i> Исходящие
+                    </button>
+                </div>
+                <!-- Фильтры заявок -->
+                <div class="requests-filters">
+                    <button class="filter-btn active" data-filter="all">Все</button>
+                    <button class="filter-btn" data-filter="new">Новые</button>
+                    <button class="filter-btn" data-filter="accepted">Принятые</button>
+                    <button class="filter-btn" data-filter="rejected">Отклонённые</button>
+                </div>
+                <!-- Pull-to-refresh индикатор -->
+                <div class="pull-to-refresh" id="pullToRefresh">
+                    <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                </div>
+                <div class="requests-list" id="requestsList" role="list" aria-label="Заявки в друзья">
+                    <!-- Заявки будут загружены через JavaScript -->
+                </div>
+                <!-- Счётчик непрочитанных -->
+                <div class="unread-badge-container" id="unreadBadgeContainer" style="display: none;">
+                    <span class="unread-badge" id="unreadRequestsBadge">0</span>
+                    <span>новых заявок</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Центральная область - Чат -->
+        <section class="messages-main" aria-label="Область сообщений">
+            <!-- Header чата -->
+            <header class="chat-header" id="chatHeader">
+                <div class="chat-info">
+                    <button class="btn-icon mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню" style="display: none;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="chat-avatar" id="chatAvatar">
+                        <span class="avatar-initials">?</span>
+                    </div>
+                    <div class="chat-details">
+                        <h3 id="chatTitle">Выберите чат</h3>
+                        <p class="chat-status" id="chatStatus">
+                            <span class="dot" id="connectionDot"></span>
+                            <span id="connectionStatus">Ожидание соединения...</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn-icon" id="videoCallBtn" title="Видеозвонок" aria-label="Начать видеозвонок" disabled>
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="btn-icon" id="voiceCallBtn" title="Голосовой звонок" aria-label="Позвонить" disabled>
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="btn-icon" id="chatInfoBtn" title="Информация" aria-label="Информация о чате" disabled>
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                    <button class="btn-icon" id="chatSettingsBtn" title="Настройки" aria-label="Настройки чата">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Область сообщений -->
+            <div class="messages-area" id="messagesArea" role="log" aria-label="История сообщений" aria-live="polite">
+                <!-- Пустое состояние -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-comments"></i>
+                    <h3>Ваши чаты</h3>
+                    <p>Выберите чат из списка слева или начните новый диалог</p>
+                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+                        <button class="btn btn-primary" onclick="document.getElementById('newChatBtn').click()">
+                            <i class="fas fa-plus"></i> Новый чат
+                        </button>
+                        <a href="/dashboard.html" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i> В кабинет
+                        </a>
+                    </div>
+                </div>
+                <!-- Список сообщений -->
+                <div class="messages-list" id="messagesList" style="display: none;" role="list" aria-label="Сообщения">
+                    <!-- Сообщения будут загружены через JavaScript -->
+                </div>
+            </div>
+
+            <!-- Область ввода сообщения -->
+            <div class="message-input-area" id="dropZone">
+                <div class="input-actions">
+                    <button class="btn-icon" id="emojiBtn" title="Смайлики" aria-label="Добавить смайлик">
+                        <i class="far fa-smile"></i>
+                    </button>
+                    <button class="btn-icon" id="attachBtn" title="Прикрепить" aria-label="Прикрепить файл">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <button class="btn-icon" id="voiceBtn" title="Голосовое" aria-label="Записать голосовое">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+                <div class="message-input-wrapper">
+                    <input type="text" 
+                           id="messageInput" 
+                           placeholder="Написать сообщение..." 
+                           autocomplete="off"
+                           aria-label="Текст сообщения"
+                           aria-describedby="messageInputHint"
+                           disabled>
+                    <div id="messageInputHint" class="sr-only">Введите текст и нажмите Enter для отправки</div>
+                </div>
+                <button class="btn btn-primary" id="sendMessageBtn" aria-label="Отправить сообщение" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Drag and drop overlay -->
+            <div class="drop-overlay" id="dropOverlay" style="display: none;">
+                <div class="drop-content">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Перетащите файлы сюда</h3>
+                    <p>или нажмите для выбора</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Правая панель - Информация о чате (скрыта по умолчанию) -->
+        <aside class="messages-right-panel" id="rightPanel" role="complementary" aria-label="Информация о чате" style="display: none;">
+            <div class="right-panel-header">
+                <div class="right-panel-avatar" id="rightPanelAvatar">
+                    <span class="avatar-initials">?</span>
+                </div>
+                <h3 class="right-panel-title" id="rightPanelTitle">Информация</h3>
+                <p class="right-panel-status" id="rightPanelStatus">
+                    <span class="dot"></span>
+                    Офлайн
+                </p>
+            </div>
+            
+            <div class="right-panel-section">
+                <h4><i class="fas fa-info-circle"></i> О чате</h4>
+                <div class="right-panel-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="item-content">
+                        <span class="item-label">Создан</span>
+                        <span class="item-value" id="chatCreated">-</span>
+                    </div>
+                </div>
+                <div class="right-panel-item">
+                    <i class="fas fa-comment-alt"></i>
+                    <div class="item-content">
+                        <span class="item-label">Сообщений</span>
+                        <span class="item-value" id="chatMessagesCount">0</span>
+                    </div>
+                </div>
+                <div class="right-panel-item">
+                    <i class="fas fa-bell"></i>
+                    <div class="item-content">
+                        <span class="item-label">Уведомления</span>
+                        <span class="item-value" id="chatNotifications">Включены</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel-section">
+                <h4><i class="fas fa-users"></i> Участники <span class="badge badge-primary" id="memberCount">1</span></h4>
+                <div id="chatMembers">
+                    <!-- Участники будут загружены через JavaScript -->
+                </div>
+            </div>
+
+            <div class="right-panel-section">
+                <h4><i class="fas fa-image"></i> Медиа</h4>
+                <div class="media-grid" id="mediaGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <!-- Медиа будут загружены через JavaScript -->
+                </div>
+                <button class="btn btn-outline btn-block" style="margin-top: 12px;" id="viewAllMediaBtn">
+                    <i class="fas fa-images"></i> Показать все
+                </button>
+            </div>
+
+            <div class="right-panel-section">
+                <h4><i class="fas fa-cog"></i> Действия</h4>
+                <button class="btn btn-outline btn-block" style="margin-bottom: 8px;" id="searchInChatBtn">
+                    <i class="fas fa-search"></i> Поиск в чате
+                </button>
+                <button class="btn btn-outline btn-block" style="margin-bottom: 8px;" id="pinChatBtn">
+                    <i class="fas fa-thumbtack"></i> Закрепить чат
+                </button>
+                <button class="btn btn-outline btn-block" style="margin-bottom: 8px;" id="muteChatBtn">
+                    <i class="fas fa-bell-slash"></i> Без звука
+                </button>
+                <button class="btn btn-danger btn-block" id="clearChatBtn">
+                    <i class="fas fa-trash"></i> Очистить историю
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Модальное окно видеозвонка -->
+    <div id="videoCallModal" class="modal">
+        <div class="modal-content" style="max-width: 100%; max-height: 100%; background: #000; border: none; border-radius: 0;">
+            <div class="video-call-overlay">
+                <div class="video-call-main">
+                    <!-- Удалённое видео или плейсхолдер -->
+                    <video id="remoteVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+                    <div class="no-video-placeholder" id="noVideoPlaceholder">
+                        <div class="avatar" id="videoCallAvatar">
+                            <span class="avatar-initials">?</span>
+                        </div>
+                        <h3 id="videoCallName">Пользователь</h3>
+                        <p id="videoCallStatus">Ожидание...</p>
+                    </div>
+                    <!-- Своё видео (PIP) -->
+                    <div class="video-call-self">
+                        <video id="localVideo" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+                    </div>
+                    <!-- Информация о звонке -->
+                    <div class="video-call-info">
+                        <div class="video-call-duration" id="callDuration">00:00</div>
+                        <div class="video-call-quality">
+                            <span class="quality-indicator" id="qualityIndicator"></span>
+                            <span id="qualityText">HD качество</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Элементы управления звонком -->
+                <div class="video-call-controls">
+                    <!-- Выбор микрофона -->
+                    <div class="mic-selector-container">
+                        <button class="video-call-btn mic-device-btn" id="micDeviceBtn" aria-label="Выбрать микрофон" title="Выбрать микрофон">
+                            <i class="fas fa-microphone"></i>
+                            <span class="mic-indicator"></span>
+                        </button>
+                        <div class="mic-device-dropdown" id="micDeviceDropdown" style="display: none;">
+                            <div class="dropdown-header">
+                                <i class="fas fa-microphone"></i>
+                                Выберите микрофон
+                            </div>
+                            <div class="mic-device-list" id="micDeviceList">
+                                <!-- Список устройств загружается JS -->
+                            </div>
+                        </div>
+                    </div>
+                    <button class="video-call-btn" id="toggleMicBtn" aria-label="Выключить микрофон" title="Микрофон">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="video-call-btn" id="toggleCameraBtn" aria-label="Выключить камеру" title="Камера">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="video-call-btn switch-camera" id="switchCameraBtn" aria-label="Переключить камеру" title="Сменить камеру">
+                        <i class="fas fa-camera-rotate"></i>
+                    </button>
+                    <button class="video-call-btn reset-call" id="resetCallBtn" aria-label="Начать звонок заново" title="Начать звонок заново">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="video-call-btn end-call" id="endCallBtn" aria-label="Завершить звонок" title="Завершить">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                    <button class="video-call-btn fullscreen-btn" id="fullscreenBtn" aria-label="Полноэкранный режим" title="Полноэкран">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно поиска пользователей -->
+    <div id="searchUsersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Поиск пользователей</h3>
+                <button class="modal-close" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box">
+                    <input type="text" 
+                           id="userSearchInput" 
+                           placeholder="Введите имя, email или ID..." 
+                           autocomplete="off"
+                           aria-label="Поиск пользователей">
+                    <button id="searchBtn" class="btn btn-primary" aria-label="Искать">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="search-results" id="searchResults" role="list" aria-label="Результаты поиска">
+                    <!-- Результаты поиска будут загружены через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно нового чата -->
+    <div id="newChatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Новый чат</h3>
+                <button class="modal-close" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label><i class="fas fa-user-friends"></i> Создать диалог</label>
+                    <select id="friendSelect" class="form-control">
+                        <option value="">Выберите друга...</option>
+                        <!-- Опции будут загружены через JavaScript -->
+                    </select>
+                </div>
+                <button id="startChatBtn" class="btn btn-primary btn-block">
+                    <i class="fas fa-comment-medical"></i> Начать диалог
+                </button>
+                <div class="divider"><span>или</span></div>
+                <div class="form-group">
+                    <label><i class="fas fa-users"></i> Создать группу</label>
+                    <input type="text" 
+                           id="groupName" 
+                           placeholder="Название группы" 
+                           class="form-control">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-users-cog"></i> Участники</label>
+                    <div class="group-participants" id="groupParticipants" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                        <!-- Участники группы будут добавлены через JavaScript -->
+                    </div>
+                </div>
+                <button id="createGroupBtn" class="btn btn-outline btn-block" disabled>
+                    <i class="fas fa-users-cog"></i> Создать группу
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно загрузки аватарки -->
+    <div id="avatarUploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-camera"></i> Загрузить аватарку</h3>
+                <button class="modal-close" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-upload-area" id="avatarDropZone" role="button" tabindex="0" aria-label="Загрузить аватарку">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Перетащите изображение или нажмите для выбора</p>
+                    <button class="btn btn-outline" onclick="document.getElementById('avatarFileInput').click()">
+                        <i class="fas fa-folder-open"></i> Выбрать файл
+                    </button>
+                    <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/gif" style="display: none;" aria-label="Выбор файла">
+                </div>
+                <div class="avatar-preview" id="avatarPreview" style="display: none;">
+                    <img id="avatarPreviewImg" src="" alt="Превью аватарки">
+                    <button class="btn btn-primary" id="confirmUploadBtn">
+                        <i class="fas fa-upload"></i> Загрузить
+                    </button>
+                </div>
+                <p class="text-muted text-center">
+                    <small>Разрешены: JPEG, PNG, GIF. Макс. размер: 5MB</small>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек профиля -->
+    <div id="profileSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-cog"></i> Настройки профиля</h3>
+                <button class="modal-close" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group text-center">
+                    <div class="chat-avatar" id="profileAvatar" style="width: 80px; height: 80px; margin: 0 auto 16px; font-size: 28px;">
+                        <span class="avatar-initials">ТП</span>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('avatarUploadModal').querySelector('.modal-close').click(); document.getElementById('avatarUploadModal').classList.add('active');">
+                        <i class="fas fa-camera"></i> Изменить фото
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Имя</label>
+                    <input type="text" id="profileName" class="form-control" placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="profileEmail" class="form-control" placeholder="Ваш email" disabled>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> О себе</label>
+                    <textarea id="profileBio" class="form-control" rows="3" placeholder="Расскажите о себе..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-toggle-on"></i> Статус</label>
+                    <select id="profileStatus" class="form-control">
+                        <option value="online">🟢 Онлайн</option>
+                        <option value="away">🟡 Не беспокоить</option>
+                        <option value="dnd">🔴 Не беспокоить</option>
+                        <option value="offline">⚪ Офлайн</option>
+                    </select>
+                </div>
+                <button id="saveProfileBtn" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Сохранить изменения
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+    <script src="/js/managers/CallManager.js"></script>
+    <script src="/js/managers/MediaDeviceManager.js"></script>
+    
+    <script src="/js/hashStorage.js"></script>
+    <script src="/js/app.js"></script>
+
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/components/header.js"></script>
+    <script src="/js/components/footer.js"></script>
+    <script src="/js/messages.js"></script>
+    
+    <!-- Инициализация мессенджера -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM загружен, инициализируем мессенджер...');
+            // Инициализируем UIManager если он существует
+            if (typeof UIManager !== 'undefined') {
+                window.messengerApp = { ui: new UIManager() };
+                console.log('UIManager инициализирован');
+            } else {
+                console.error('UIManager не найден! messages.js не загружен');
+            }
+        });
+    </script>
+    <script src="/js/components/call-notification.js"></script>
+    <script src="/js/components/call-history.js"></script>
+
+    <script src="/js/messages.js"></script>
+    
+    <!-- Привязка событий кнопок звонков -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем wsManager для CallManager
+            if (typeof WebSocketManager !== 'undefined') {
+                window.wsManager = WebSocketManager;
+            }
+            
+            // Видеозвонок
+            const videoCallBtn = document.getElementById('videoCallBtn');
+            if (videoCallBtn) {
+                videoCallBtn.addEventListener('click', function() {
+                    if (window.messengerApp && window.messengerApp.ui && window.messengerApp.ui.activeChatId) {
+                        const friendId = window.messengerApp.ui.chats.find(c => c.id === window.messengerApp.ui.activeChatId)?.participantId;
+                        if (friendId && typeof window.CallManager !== 'undefined') {
+                            window.CallManager.startCall(friendId, true);
+                        }
+                    }
+                });
+            }
+            
+            // Голосовой звонок
+            const voiceCallBtn = document.getElementById('voiceCallBtn');
+            if (voiceCallBtn) {
+                voiceCallBtn.addEventListener('click', function() {
+                    if (window.messengerApp && window.messengerApp.ui && window.messengerApp.ui.activeChatId) {
+                        const friendId = window.messengerApp.ui.chats.find(c => c.id === window.messengerApp.ui.activeChatId)?.participantId;
+                        if (friendId && typeof window.CallManager !== 'undefined') {
+                            window.CallManager.startCall(friendId, false);
+                        }
+                    }
+                });
+            }
+            
+            // Управление звонком
+            const endCallBtn = document.getElementById('endCallBtn');
+            if (endCallBtn && typeof window.CallManager !== 'undefined') {
+                endCallBtn.addEventListener('click', function() {
+                    window.CallManager.endCall();
+                });
+            }
+            
+            const toggleMicBtn = document.getElementById('toggleMicBtn');
+            if (toggleMicBtn && typeof window.CallManager !== 'undefined') {
+                toggleMicBtn.addEventListener('click', function() {
+                    window.CallManager.toggleMute();
+                });
+            }
+            
+            const toggleCameraBtn = document.getElementById('toggleCameraBtn');
+            if (toggleCameraBtn && typeof window.CallManager !== 'undefined') {
+                toggleCameraBtn.addEventListener('click', function() {
+                    window.CallManager.toggleCamera();
+                });
+            }
+            
+            const switchCameraBtn = document.getElementById('switchCameraBtn');
+            if (switchCameraBtn && typeof window.CallManager !== 'undefined') {
+                switchCameraBtn.addEventListener('click', function() {
+                    window.CallManager.switchCamera();
+                });
+            }
+            
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', function() {
+                    const modal = document.getElementById('videoCallModal');
+                    if (modal) {
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            modal.requestFullscreen();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

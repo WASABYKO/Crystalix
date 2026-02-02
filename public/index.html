@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTariff | Цифровые решения будущего</title>
+
+    <!-- CSP-мета: разрешает внешние CDN и inline-скрипты -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https:;
+        connect-src 'self' ws: wss: ws://localhost:3000 http://localhost:3000;
+        frame-ancestors 'none';
+    ">
+
+    <!-- Локальные стили -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+
+    <!-- Внешние библиотеки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <!-- Парящие частицы -->
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+
+        <div class="loader">
+            <svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+                <!-- SVG лоадер -->
+            </svg>
+        </div>
+
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка цифровой экосистемы</p>
+            <p id="loaderMessage">Инициализация главной страницы...</p>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Шапка сайта -->
+    <header id="siteHeader"></header>
+
+    <!-- Основной контент главной страницы -->
+    <main class="main-content">
+        <!-- Герой секция -->
+        <section class="hero-section">
+            <div class="hero-bg-animation"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text glitch" data-text="TechTariff">TechTariff</span>
+                        <span class="hero-subtitle">Цифровые решения будущего</span>
+                    </h1>
+                    <p class="hero-description">
+                        Инновационная платформа для управления тарифами и подписками.
+                        Мы создаем будущее цифровых услуг с помощью современных технологий.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="/tariffs.html" class="btn btn-primary btn-lg glow">
+                            <i class="fas fa-rocket"></i> Выбрать тариф
+                        </a>
+                        <a href="#features" class="btn btn-outline btn-lg">
+                            <i class="fas fa-info-circle"></i> Узнать больше
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-image">
+                    <div class="floating-cards">
+                        <div class="floating-card card-1">
+                            <i class="fas fa-bolt"></i>
+                            <h4>Мгновенная активация</h4>
+                        </div>
+                        <div class="floating-card card-2">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Полная безопасность</h4>
+                        </div>
+                        <div class="floating-card card-3">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Детальная аналитика</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- О проекте -->
+        <section class="about-section" id="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2>О проекте</h2>
+                    <p>Инновационная платформа для цифровой эпохи</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3>Современные технологии</h3>
+                        <p>Используем передовые технологии для создания надежных и масштабируемых решений.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3>Безопасность данных</h3>
+                        <p>Все данные защищены с помощью современных алгоритмов шифрования и хэширования.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Адаптивный дизайн</h3>
+                        <p>Идеально отображается на любых устройствах - от смартфонов до десктопов.</p>
+                    </div>
+
+                    <div class="about-card">
+                        <div class="about-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Высокая скорость</h3>
+                        <p>Оптимизированная производительность обеспечивает мгновенную загрузку страниц.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Возможности -->
+        <section class="features-section" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Возможности платформы</h2>
+                    <p>Все, что нужно для управления вашими тарифами</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-number">01</div>
+                        <h3>Управление тарифами</h3>
+                        <p>Легко переключайтесь между тарифами, отслеживайте историю изменений и управляйте подписками.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-number">02</div>
+                        <h3>Личный кабинет</h3>
+                        <p>Персонализированная панель управления с историей активности и настройками профиля.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-number">03</div>
+                        <h3>Безопасная аутентификация</h3>
+                        <p>Защищенная система входа с хэшированием паролей и возможностью восстановления доступа.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-number">04</div>
+                        <h3>Детальная аналитика</h3>
+                        <p>Подробные отчеты и статистика использования сервисов для принятия взвешенных решений.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-number">05</div>
+                        <h3>Мультиплатформенность</h3>
+                        <p>Доступ к сервису с любых устройств в любое время через современный веб-интерфейс.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-number">06</div>
+                        <h3>Техническая поддержка</h3>
+                        <p>Круглосуточная поддержка пользователей и оперативное решение возникающих вопросов.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA секция -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Готовы начать?</h2>
+                    <p>Присоединяйтесь к тысячам довольных пользователей уже сегодня</p>
+                    <div class="cta-buttons">
+                        <a href="/auth.html" class="btn btn-primary btn-lg glow">
+                            <i class="fas fa-user-plus"></i> Начать бесплатно
+                        </a>
+                        <a href="/tariffs.html" class="btn btn-outline btn-lg">
+                            <i class="fas fa-list-alt"></i> Смотреть тарифы
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Подвал сайта -->
+    <footer id="siteFooter"></footer>
+
+    <!-- Скрипты -->
+    <script src="/js/hashStorage.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/components/header.js"></script>
+    <script src="/js/components/footer.js"></script>
+
+    <!-- Менеджеры -->
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+
+
+    <script>
+        // Инициализация для главной страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            App.init();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход и регистрация | TechTariff</title>
+
+    <!-- CSP-мета: разрешает внешние CDN и inline-скрипты -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https:;
+        connect-src 'self' ws: wss: ws://localhost:3000 http://localhost:3000;
+    ">
+
+    <!-- Локальные стили — абсолютные пути от корня -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+
+    <!-- Внешние библиотеки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+        
+        <div class="loader">
+            <svg viewBox="0 0 900 900" xmlns="http://www.w3.org/2000/svg">
+                <!-- SVG лоадер -->
+            </svg>
+        </div>
+        
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка системы авторизации</p>
+            <p id="loaderMessage">Инициализация безопасности...</p>
+            <div class="loader-progress">
+                <div class="loader-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Шапка сайта (упрощенная) -->
+    <header class="auth-header">
+        <div class="container">
+            <div class="auth-header-content">
+                <a href="index.html" class="auth-logo">
+                    <i class="fas fa-bolt"></i>
+                    <span>TechTariff</span>
+                </a>
+                <a href="index.html" class="btn btn-outline">
+                    <i class="fas fa-home"></i> На главную
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="auth-main">
+        <div class="container">
+            <div class="auth-container">
+                <!-- Левая часть - информация -->
+                <div class="auth-info">
+                    <div class="auth-info-content">
+                        <h1>Добро пожаловать в <span class="gradient-text">TechTariff</span></h1>
+                        <p class="auth-description">
+                            Присоединяйтесь к сообществу профессионалов, которые уже используют наши решения для управления тарифами.
+                        </p>
+                        
+                        <div class="auth-features">
+                            <div class="auth-feature">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <h4>Безопасность</h4>
+                                    <p>Все данные защищены современными алгоритмами</p>
+                                </div>
+                            </div>
+                            
+                            <div class="auth-feature">
+                                <i class="fas fa-rocket"></i>
+                                <div>
+                                    <h4>Простота</h4>
+                                    <p>Интуитивно понятный интерфейс и быстрый доступ</p>
+                                </div>
+                            </div>
+                            
+                            <div class="auth-feature">
+                                <i class="fas fa-headset"></i>
+                                <div>
+                                    <h4>Поддержка</h4>
+                                    <p>Наша команда всегда готова помочь вам</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="auth-stats">
+                            <div class="stat">
+                                <h3>1000+</h3>
+                                <p>Пользователей</p>
+                            </div>
+                            <div class="stat">
+                                <h3>24/7</h3>
+                                <p>Доступность</p>
+                            </div>
+                            <div class="stat">
+                                <h3>99.9%</h3>
+                                <p>Надежность</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Правая часть - формы -->
+                <div class="auth-forms">
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" data-tab="login">
+                            <i class="fas fa-sign-in-alt"></i> Вход
+                        </button>
+                        <button class="auth-tab" data-tab="register">
+                            <i class="fas fa-user-plus"></i> Регистрация
+                        </button>
+                    </div>
+                    
+                    <!-- Форма входа -->
+                    <div class="auth-form active" id="loginForm">
+                        <h2>Вход в аккаунт</h2>
+                        <p class="form-subtitle">Введите ваши данные для входа</p>
+                        
+                        <div class="form-group">
+                            <label for="loginEmail">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            <input type="email" id="loginEmail" placeholder="Ваш email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loginPassword">
+                                <i class="fas fa-lock"></i> Пароль
+                            </label>
+                            <div class="password-input">
+                                <input type="password" id="loginPassword" placeholder="Ваш пароль" required>
+                                <button type="button" class="show-password" data-target="loginPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <a href="#" class="forgot-password" id="forgotPassword">
+                                Забыли пароль?
+                            </a>
+                        </div>
+                        
+                        <div class="form-group remember-me">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rememberMe">
+                                <span class="checkmark"></span>
+                                Запомнить меня
+                            </label>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" id="submitLogin">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </button>
+                        
+                        <div class="divider">
+                            <span>или</span>
+                        </div>
+                        
+                        <div class="social-auth">
+                            <button class="social-btn google">
+                                <i class="fab fa-google"></i> Google
+                            </button>
+                            <button class="social-btn github">
+                                <i class="fab fa-github"></i> GitHub
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма регистрации -->
+                    <div class="auth-form" id="registerForm">
+                        <h2>Создание аккаунта</h2>
+                        <p class="form-subtitle">Заполните форму для регистрации</p>
+                        
+                        <div class="form-group">
+                            <label for="registerName">
+                                <i class="fas fa-user"></i> Имя
+                            </label>
+                            <input type="text" id="registerName" placeholder="Ваше имя" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerEmail">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            <input type="email" id="registerEmail" placeholder="Ваш email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="registerPassword">
+                                <i class="fas fa-lock"></i> Пароль
+                            </label>
+                            <div class="password-input">
+                                <input type="password" id="registerPassword" placeholder="Придумайте пароль" required>
+                                <button type="button" class="show-password" data-target="registerPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar"></div>
+                                <span class="strength-text">Надежность пароля</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmPassword">
+                                <i class="fas fa-lock"></i> Подтверждение пароля
+                            </label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" placeholder="Повторите пароль" required>
+                                <button type="button" class="show-password" data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group terms">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="acceptTerms" required>
+                                <span class="checkmark"></span>
+                                Я согласен с 
+                                <a href="#" class="terms-link">условиями использования</a> 
+                                и 
+                                <a href="#" class="terms-link">политикой конфиденциальности</a>
+                            </label>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" id="submitRegister">
+                            <i class="fas fa-user-plus"></i> Зарегистрироваться
+                        </button>
+                        
+                        <p class="auth-note">
+                            Нажимая кнопку, вы подтверждаете свое согласие с нашими условиями
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно восстановления пароля -->
+    <div id="recoveryModal" class="modal">
+        <div class="modal-content">
+            <!-- Содержимое загружается через JS -->
+        </div>
+    </div>
+
+    <!-- Скрипты — абсолютные пути, без дублей -->
+    
+    <!-- Менеджеры — загружаем сначала -->
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+    
+    <!-- HashStorage — после менеджеров -->
+    <script src="/js/hashStorage.js"></script>
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+
+    <!-- Inline-скрипт инициализации -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            App.initAuthPage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "friend_1769885498135",
+    "user1": "user_1769866446241_mjw5hjix",
+    "user2": "user_1769880646655_b0zlyz0k",
+    "status": "accepted",
+    "acceptedAt": "2026-01-31T18:51:38.135Z"
+  },
+  {
+    "id": "friend_1769885610997",
+    "user1": "user_1769880646655_b0zlyz0k",
+    "user2": "user_1769866446241_mjw5hjix",
+    "status": "accepted",
+    "acceptedAt": "2026-01-31T18:53:30.997Z"
+  },
+  {
+    "id": "friend_1769885827441",
+    "user1": "user_1769883134044_depjg2jv",
+    "user2": "user_1769866446241_mjw5hjix",
+    "status": "accepted",
+    "acceptedAt": "2026-01-31T18:57:07.441Z"
+  },
+  {
+    "id": "friend_1769885845077",
+    "user1": "user_1769866446241_mjw5hjix",
+    "user2": "user_1769880646655_b0zlyz0k",
+    "status": "accepted",
+    "acceptedAt": "2026-01-31T18:57:25.077Z"
+  },
+  {
+    "id": "friend_1769965764550",
+    "user1": "user_1769866446241_mjw5hjix",
+    "user2": "user_1769877757926_vt1ab1gl",
+    "status": "accepted",
+    "acceptedAt": "2026-02-01T17:09:24.550Z"
+  }
+]

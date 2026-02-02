@@ -1,0 +1,348 @@
+/* Лоадер с улучшенными анимациями */
+.loader-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #050505 0%, #0a0a0a 50%, #111 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.loader {
+    width: 800px;
+    height: 800px;
+    max-width: 90vw;
+    max-height: 90vw;
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(0.5deg); }
+}
+
+/* Парящие частицы */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    filter: blur(1px);
+    animation: particleFloat 8s infinite linear;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100px) translateX(100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Сетка с анимацией */
+.grid-line {
+    stroke: rgba(0, 204, 255, 0.1);
+    stroke-width: 0.5;
+    animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+    0%, 100% { stroke-opacity: 0.1; }
+    50% { stroke-opacity: 0.3; }
+}
+
+.browser-frame {
+    fill: rgba(17, 17, 17, 0.95);
+    stroke: rgba(0, 204, 255, 0.3);
+    stroke-width: 2;
+    filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.3));
+    animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+    0%, 100% { 
+        stroke-width: 2;
+        filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.3));
+    }
+    50% { 
+        stroke-width: 3;
+        filter: drop-shadow(0 0 30px rgba(0, 204, 255, 0.5));
+    }
+}
+
+.browser-top {
+    fill: rgba(26, 26, 26, 0.95);
+    animation: topSlide 2s ease-in-out infinite;
+}
+
+@keyframes topSlide {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+.loading-text {
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    font-size: 16px;
+    fill: var(--primary);
+    font-weight: 700;
+    letter-spacing: 2px;
+    animation: textShimmer 2s ease-in-out infinite;
+}
+
+@keyframes textShimmer {
+    0%, 100% { 
+        fill: var(--primary); 
+        filter: drop-shadow(0 0 5px rgba(0, 204, 255, 0.5));
+    }
+    50% { 
+        fill: var(--secondary); 
+        filter: drop-shadow(0 0 10px rgba(0, 255, 170, 0.7));
+    }
+}
+
+.skeleton {
+    fill: #2d2d2d;
+    rx: 4;
+    ry: 4;
+    animation: skeletonPulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.02));
+}
+
+.skeleton:nth-child(1) { animation-delay: 0.1s; }
+.skeleton:nth-child(2) { animation-delay: 0.3s; }
+.skeleton:nth-child(3) { animation-delay: 0.5s; }
+.skeleton:nth-child(4) { animation-delay: 0.7s; }
+.skeleton:nth-child(5) { animation-delay: 0.9s; }
+
+@keyframes skeletonPulse {
+    0%, 100% { 
+        fill: #2d2d2d;
+        transform: translateX(0);
+    }
+    25% { 
+        fill: #3d3d3d;
+        transform: translateX(2px);
+    }
+    50% { 
+        fill: #505050;
+        transform: translateX(0);
+    }
+    75% { 
+        fill: #3d3d3d;
+        transform: translateX(-2px);
+    }
+}
+
+/* Траектории с улучшенными анимациями */
+.trace-flow {
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 20 40;
+    stroke-dashoffset: 60;
+    animation: traceFlow 2s linear infinite;
+    opacity: 0.8;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 15px currentColor);
+}
+
+.trace-flow:nth-child(1) { 
+    stroke: url(#traceGradient1); 
+    animation-delay: 0s;
+    animation-duration: 3s;
+}
+.trace-flow:nth-child(2) { 
+    stroke: url(#traceGradient2); 
+    animation-delay: 0.5s;
+    animation-duration: 4s;
+}
+.trace-flow:nth-child(3) { 
+    stroke: url(#traceGradient3); 
+    animation-delay: 1s;
+    animation-duration: 3.5s;
+}
+.trace-flow:nth-child(4) { 
+    stroke: url(#traceGradient4); 
+    animation-delay: 1.5s;
+    animation-duration: 4.5s;
+}
+
+@keyframes traceFlow {
+    0% {
+        stroke-dashoffset: 60;
+        opacity: 0;
+        stroke-width: 2;
+    }
+    10% {
+        opacity: 1;
+    }
+    50% {
+        stroke-width: 3;
+        filter: drop-shadow(0 0 25px currentColor);
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+        stroke-width: 1;
+    }
+}
+
+/* Дополнительные элементы лоадера */
+.loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, 
+        transparent 0%, 
+        rgba(0, 0, 0, 0.8) 70%);
+    z-index: 0;
+}
+
+/* Текст и прогресс лоадера */
+.loader-text {
+    margin-top: 3rem;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.loader-dots {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50%;
+    animation: dotJump 1.5s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+}
+
+.dot:nth-child(1) { 
+    animation-delay: 0s;
+    background: var(--primary);
+}
+.dot:nth-child(2) { 
+    animation-delay: 0.2s;
+    background: var(--secondary);
+}
+.dot:nth-child(3) { 
+    animation-delay: 0.4s;
+    background: var(--primary);
+}
+
+@keyframes dotJump {
+    0%, 100% { 
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+    }
+    25% { 
+        transform: translateY(-20px) scale(1.2);
+        box-shadow: 0 0 25px rgba(0, 204, 255, 0.8);
+    }
+    50% { 
+        transform: translateY(0) scale(1);
+        box-shadow: 0 0 15px rgba(0, 204, 255, 0.5);
+    }
+    75% { 
+        transform: translateY(-10px) scale(1.1);
+        box-shadow: 0 0 20px rgba(0, 204, 255, 0.6);
+    }
+}
+
+.loader-text p {
+    color: var(--text);
+    font-size: 1rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 300;
+    animation: textFlow 3s ease-in-out infinite;
+}
+
+.loader-progress {
+    width: 300px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    margin-top: 2rem;
+}
+
+.loader-progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, 
+        var(--primary) 0%, 
+        var(--secondary) 50%, 
+        var(--primary) 100%);
+    animation: progressLoad 3s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+}
+
+@keyframes progressLoad {
+    0% { width: 0%; left: 0; }
+    50% { width: 100%; left: 0; }
+    100% { width: 0%; left: 100%; }
+}
+
+@keyframes textFlow {
+    0%, 100% { 
+        opacity: 0.5;
+        letter-spacing: 3px;
+    }
+    50% { 
+        opacity: 1;
+        letter-spacing: 5px;
+    }
+}
+
+/* Исчезновение лоадера */
+.loader-container.hide {
+    animation: fadeOut 0.8s ease forwards;
+}
+
+@keyframes fadeOut {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(1.1);
+        visibility: hidden;
+    }
+}

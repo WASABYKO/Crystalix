@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест системы пользователей</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #00ccff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #00ffaa;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #00ccff;
+            padding-bottom: 5px;
+        }
+        
+        .test-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: #00ccff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #00ffaa;
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .user-card {
+            background: #3d3d3d;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #00ccff;
+        }
+        
+        .user-card h4 {
+            color: #00ffaa;
+            margin-bottom: 5px;
+        }
+        
+        .user-card p {
+            color: #ccc;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ccff;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: rgba(0, 255, 170, 0.2);
+            color: #00ffaa;
+            border: 1px solid #00ffaa;
+        }
+        
+        .error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        
+        .info {
+            background: rgba(0, 204, 255, 0.2);
+            color: #00ccff;
+            border: 1px solid #00ccff;
+        }
+        
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тестирование системы пользователей TechTariff</h1>
+        
+        <!-- Секция инициализации -->
+        <div class="test-section">
+            <h2>Инициализация данных</h2>
+            <div class="test-buttons">
+                <button onclick="initDemoData()">Создать тестовых пользователей</button>
+                <button onclick="clearAllData()">Очистить все данные</button>
+                <button onclick="checkData()">Проверить данные</button>
+            </div>
+            <div id="initResults"></div>
+        </div>
+        
+        <!-- Секция регистрации -->
+        <div class="test-section">
+            <h2>Регистрация пользователя</h2>
+            <div class="form-group">
+                <label for="regName">Имя:</label>
+                <input type="text" id="regName" placeholder="Введите имя">
+                
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" placeholder="Введите email">
+                
+                <label for="regPassword">Пароль:</label>
+                <input type="password" id="regPassword" placeholder="Введите пароль">
+                
+                <button onclick="registerUser()">Зарегистрировать</button>
+            </div>
+            <div id="registerResults"></div>
+        </div>
+        
+        <!-- Секция входа -->
+        <div class="test-section">
+            <h2>Вход в систему</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="Введите email">
+                
+                <label for="loginPassword">Пароль:</label>
+                <input type="password" id="loginPassword" placeholder="Введите пароль">
+                
+                <button onclick="loginUser()">Войти</button>
+                <button onclick="logoutUser()">Выйти</button>
+            </div>
+            <div id="loginResults"></div>
+        </div>
+        
+        <!-- Секция поиска -->
+        <div class="test-section">
+            <h2>Поиск пользователей</h2>
+            <div class="form-group">
+                <input type="text" id="searchQuery" placeholder="Введите ID, имя или email" 
+                       onkeyup="if(event.key === 'Enter') searchUsers()">
+                <button onclick="searchUsers()">Поиск</button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
+        
+        <!-- Секция друзей -->
+        <div class="test-section">
+            <h2>Система друзей</h2>
+            <div class="form-group">
+                <label for="friendId">ID пользователя для заявки:</label>
+                <input type="text" id="friendId" placeholder="Введите ID пользователя">
+                <button onclick="sendFriendRequest()">Отправить заявку в друзья</button>
+            </div>
+            
+            <div class="test-buttons">
+                <button onclick="showFriends()">Показать моих друзей</button>
+                <button onclick="showIncomingRequests()">Входящие заявки</button>
+                <button onclick="showOutgoingRequests()">Исходящие заявки</button>
+            </div>
+            
+            <div id="friendsResults"></div>
+        </div>
+        
+        <!-- Секция информации -->
+        <div class="test-section">
+            <h2>Информация о системе</h2>
+            <div class="test-buttons">
+                <button onclick="showAllUsers()">Все пользователи в системе</button>
+                <button onclick="showCurrentUser()">Текущий пользователь</button>
+                <button onclick="showStorageInfo()">Информация о хранилище</button>
+            </div>
+            <div id="infoResults"></div>
+        </div>
+    </div>
+
+    <script src="hashStorage.js"></script>
+    <script>
+        // Делегирование событий для тестовых кнопок
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация обработчиков кнопок
+            initButtonHandlers();
+            
+            checkData();
+            
+            // Автозаполнение для удобства тестирования
+            document.getElementById('loginEmail').value = 'alex@example.com';
+            document.getElementById('loginPassword').value = 'password123';
+            
+            document.getElementById('searchQuery').value = 'user';
+            
+            document.getElementById('friendId').value = 'user_003';
+        });
+        
+        function initButtonHandlers() {
+            // Кнопки инициализации
+            const initDemoBtn = document.querySelector('button[onclick="initDemoData()"]');
+            if (initDemoBtn) initDemoBtn.addEventListener('click', initDemoData);
+            
+            const clearAllBtn = document.querySelector('button[onclick="clearAllData()"]');
+            if (clearAllBtn) clearAllBtn.addEventListener('click', clearAllData);
+            
+            const checkDataBtn = document.querySelector('button[onclick="checkData()"]');
+            if (checkDataBtn) checkDataBtn.addEventListener('click', checkData);
+            
+            // Кнопки регистрации
+            const registerBtn = document.querySelector('button[onclick="registerUser()"]');
+            if (registerBtn) registerBtn.addEventListener('click', registerUser);
+            
+            // Кнопки входа/выхода
+            const loginBtn = document.querySelector('button[onclick="loginUser()"]');
+            if (loginBtn) loginBtn.addEventListener('click', loginUser);
+            
+            const logoutBtn = document.querySelector('button[onclick="logoutUser()"]');
+            if (logoutBtn) logoutBtn.addEventListener('click', logoutUser);
+            
+            // Поиск
+            const searchBtn = document.querySelector('button[onclick="searchUsers()"]');
+            if (searchBtn) searchBtn.addEventListener('click', searchUsers);
+            
+            const searchInput = document.getElementById('searchQuery');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') searchUsers();
+                });
+            }
+            
+            // Друзья
+            const friendRequestBtn = document.querySelector('button[onclick="sendFriendRequest()"]');
+            if (friendRequestBtn) friendRequestBtn.addEventListener('click', sendFriendRequest);
+            
+            const showFriendsBtn = document.querySelector('button[onclick="showFriends()"]');
+            if (showFriendsBtn) showFriendsBtn.addEventListener('click', showFriends);
+            
+            const showIncomingBtn = document.querySelector('button[onclick="showIncomingRequests()"]');
+            if (showIncomingBtn) showIncomingBtn.addEventListener('click', showIncomingRequests);
+            
+            const showOutgoingBtn = document.querySelector('button[onclick="showOutgoingRequests()"]');
+            if (showOutgoingBtn) showOutgoingBtn.addEventListener('click', showOutgoingRequests);
+            
+            // Информация
+            const showAllUsersBtn = document.querySelector('button[onclick="showAllUsers()"]');
+            if (showAllUsersBtn) showAllUsersBtn.addEventListener('click', showAllUsers);
+            
+            const showCurrentBtn = document.querySelector('button[onclick="showCurrentUser()"]');
+            if (showCurrentBtn) showCurrentBtn.addEventListener('click', showCurrentUser);
+            
+            const showStorageBtn = document.querySelector('button[onclick="showStorageInfo()"]');
+            if (showStorageBtn) showStorageBtn.addEventListener('click', showStorageInfo);
+        }
+        
+        // Функции для тестирования
+        
+        // Инициализация демо-данных
+        async function initDemoData() {
+            try {
+                // Очищаем результаты
+                document.getElementById('initResults').innerHTML = '<div class="status info">Создаю тестовые данные...</div>';
+                
+                // Создаем тестовых пользователей
+                const demoUsers = [
+                    {
+                        id: 'user_001',
+                        name: 'Александр Иванов',
+                        email: 'alex@example.com',
+                        passwordHash: await HashStorage.hashPassword('password123'),
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        tariff: 'pro',
+                        avatarColor: '#00ccff'
+                    },
+                    {
+                        id: 'user_002',
+                        name: 'Мария Петрова',
+                        email: 'maria@example.com',
+                        passwordHash: await HashStorage.hashPassword('password123'),
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        tariff: 'basic',
+                        avatarColor: '#ff6b6b'
+                    },
+                    {
+                        id: 'user_003',
+                        name: 'Дмитрий Сидоров',
+                        email: 'dmitry@example.com',
+                        passwordHash: await HashStorage.hashPassword('password123'),
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        tariff: 'free',
+                        avatarColor: '#00ffaa'
+                    },
+                    {
+                        id: 'admin_001',
+                        name: 'Администратор',
+                        email: 'admin@techtariff.com',
+                        passwordHash: await HashStorage.hashPassword('admin123'),
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        tariff: 'pro',
+                        role: 'admin',
+                        avatarColor: '#ff4757'
+                    }
+                ];
+                
+                // Сохраняем пользователей
+                localStorage.setItem('users', JSON.stringify(demoUsers));
+                
+                // Создаем тестовые заявки в друзья
+                const friendships = [
+                    {
+                        id: 'req_001_002',
+                        userId1: 'user_001',
+                        userId2: 'user_002',
+                        senderId: 'user_001',
+                        receiverId: 'user_002',
+                        status: 'accepted',
+                        message: 'Привет! Давай дружить!',
+                        createdAt: new Date(Date.now() - 86400000).toISOString(),
+                        senderName: 'Александр Иванов',
+                        receiverName: 'Мария Петрова'
+                    },
+                    {
+                        id: 'req_001_003',
+                        userId1: 'user_001',
+                        userId2: 'user_003',
+                        senderId: 'user_003',
+                        receiverId: 'user_001',
+                        status: 'pending',
+                        message: 'Здравствуйте!',
+                        createdAt: new Date(Date.now() - 3600000).toISOString(),
+                        senderName: 'Дмитрий Сидоров',
+                        receiverName: 'Александр Иванов'
+                    }
+                ];
+                
+                localStorage.setItem('friendships', JSON.stringify(friendships));
+                
+                // Создаем тестовые чаты
+                const chats = [
+                    {
+                        id: 'chat_001',
+                        type: 'private',
+                        name: 'Мария Петрова',
+                        avatarColor: '#ff6b6b',
+                        participants: ['user_001', 'user_002'],
+                        createdAt: new Date(Date.now() - 86400000).toISOString(),
+                        messages: [
+                            {
+                                id: 'msg_001',
+                                chatId: 'chat_001',
+                                senderId: 'user_001',
+                                senderName: 'Александр Иванов',
+                                senderAvatar: '#00ccff',
+                                content: 'Привет, Мария! Как дела?',
+                                createdAt: new Date(Date.now() - 7200000).toISOString(),
+                                isRead: true
+                            },
+                            {
+                                id: 'msg_002',
+                                chatId: 'chat_001',
+                                senderId: 'user_002',
+                                senderName: 'Мария Петрова',
+                                senderAvatar: '#ff6b6b',
+                                content: 'Привет! Всё отлично, спасибо! А у тебя?',
+                                createdAt: new Date(Date.now() - 7000000).toISOString(),
+                                isRead: true
+                            }
+                        ]
+                    }
+                ];
+                
+                localStorage.setItem('chats', JSON.stringify(chats));
+                
+                document.getElementById('initResults').innerHTML = 
+                    '<div class="status success">✅ Тестовые данные успешно созданы!<br>' +
+                    '• 4 пользователя (включая администратора)<br>' +
+                    '• 2 заявки в друзья<br>' +
+                    '• 1 чат с сообщениями</div>';
+                    
+                // Показываем созданных пользователей
+                showAllUsers();
+                
+            } catch (error) {
+                document.getElementById('initResults').innerHTML = 
+                    '<div class="status error">❌ Ошибка: ' + error.message + '</div>';
+            }
+        }
+        
+        // Очистка всех данных
+        function clearAllData() {
+            localStorage.clear();
+            document.getElementById('initResults').innerHTML = 
+                '<div class="status success">✅ Все данные очищены!</div>';
+        }
+        
+        // Проверка данных
+        function checkData() {
+            const users = localStorage.getItem('users');
+            const friendships = localStorage.getItem('friendships');
+            const chats = localStorage.getItem('chats');
+            
+            let result = '<div class="status info">📊 Состояние хранилища:</div><div class="results">';
+            
+            if (users) {
+                const usersCount = JSON.parse(users).length;
+                result += `<p>👥 Пользователей: ${usersCount}</p>`;
+            } else {
+                result += '<p>👥 Пользователей: нет</p>';
+            }
+            
+            if (friendships) {
+                const friendshipsCount = JSON.parse(friendships).length;
+                result += `<p>🤝 Заявок в друзья: ${friendshipsCount}</p>`;
+            } else {
+                result += '<p>🤝 Заявок в друзья: нет</p>';
+            }
+            
+            if (chats) {
+                const chatsCount = JSON.parse(chats).length;
+                result += `<p>💬 Чатов: ${chatsCount}</p>`;
+            } else {
+                result += '<p>💬 Чатов: нет</p>';
+            }
+            
+            const currentUser = HashStorage.getCurrentUser();
+            if (currentUser) {
+                result += `<p>👤 Текущий пользователь: ${currentUser.name} (${currentUser.email})</p>`;
+            } else {
+                result += '<p>👤 Текущий пользователь: не авторизован</p>';
+            }
+            
+            result += '</div>';
+            document.getElementById('initResults').innerHTML = result;
+        }
+        
+        // Регистрация пользователя
+        async function registerUser() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (!name || !email || !password) {
+                document.getElementById('registerResults').innerHTML = 
+                    '<div class="status error">❌ Заполните все поля</div>';
+                return;
+            }
+            
+            const result = await HashStorage.saveUser({ name, email, password });
+            
+            if (result.success) {
+                document.getElementById('registerResults').innerHTML = 
+                    `<div class="status success">✅ ${result.message}<br>ID пользователя: ${result.user.id}</div>`;
+                
+                // Очищаем поля
+                document.getElementById('regName').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+                
+                // Показываем нового пользователя
+                showAllUsers();
+            } else {
+                document.getElementById('registerResults').innerHTML = 
+                    `<div class="status error">❌ ${result.message}</div>`;
+            }
+        }
+        
+        // Вход пользователя
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                document.getElementById('loginResults').innerHTML = 
+                    '<div class="status error">❌ Заполните все поля</div>';
+                return;
+            }
+            
+            const result = await HashStorage.authenticate(email, password);
+            
+            if (result.success) {
+                document.getElementById('loginResults').innerHTML = 
+                    `<div class="status success">✅ Вход выполнен успешно!<br>` +
+                    `Добро пожаловать, ${result.user.name}!</div>`;
+                
+                // Показываем текущего пользователя
+                showCurrentUser();
+            } else {
+                document.getElementById('loginResults').innerHTML = 
+                    `<div class="status error">❌ ${result.message}</div>`;
+            }
+        }
+        
+        // Выход пользователя
+        function logoutUser() {
+            HashStorage.logout();
+            document.getElementById('loginResults').innerHTML = 
+                '<div class="status success">✅ Вы вышли из системы</div>';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+        
+        // Поиск пользователей
+        function searchUsers() {
+            const query = document.getElementById('searchQuery').value;
+            
+            if (!query || query.trim().length < 2) {
+                document.getElementById('searchResults').innerHTML = 
+                    '<div class="status info">ℹ️ Введите хотя бы 2 символа</div>';
+                return;
+            }
+            
+            const currentUser = HashStorage.getCurrentUser();
+            const results = HashStorage.searchUsers(query, true);
+            
+            if (results.length === 0) {
+                document.getElementById('searchResults').innerHTML = 
+                    '<div class="status info">ℹ️ Пользователи не найдены</div>';
+                return;
+            }
+            
+            let html = `<div class="status info">🔍 Найдено пользователей: ${results.length}</div>`;
+            
+            results.forEach(user => {
+                const friendshipStatus = HashStorage.getFriendshipStatus(currentUser?.id, user.id);
+                let statusText = '';
+                
+                switch(friendshipStatus) {
+                    case 'accepted':
+                        statusText = '<span style="color:#00ffaa">✓ Друг</span>';
+                        break;
+                    case 'pending':
+                        statusText = '<span style="color:#ffa502">⏳ Заявка отправлена</span>';
+                        break;
+                    default:
+                        statusText = '<span style="color:#00ccff">Не в друзьях</span>';
+                }
+                
+                html += `
+                    <div class="user-card">
+                        <h4>${user.name}</h4>
+                        <p>📧 ${user.email}</p>
+                        <p>🆔 ${user.id}</p>
+                        <p>${statusText}</p>
+                        <p><small>Тариф: ${user.tariff}</small></p>
+                        ${currentUser && friendshipStatus === 'none' ? 
+                            `<button onclick="sendRequestTo('${user.id}')" style="font-size:12px; padding:5px 10px;">
+                                Добавить в друзья
+                            </button>` : ''}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('searchResults').innerHTML = html;
+        }
+        
+        // Отправить заявку конкретному пользователю
+        function sendRequestTo(userId) {
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                alert('Сначала войдите в систему');
+                return;
+            }
+            
+            const result = HashStorage.sendFriendRequest(currentUser.id, userId, 'Привет! Давай дружить!');
+            
+            if (result.success) {
+                alert('Заявка отправлена!');
+                searchUsers(); // Обновляем результаты поиска
+            } else {
+                alert('Ошибка: ' + result.message);
+            }
+        }
+        
+        // Отправить заявку в друзья
+        function sendFriendRequest() {
+            const friendId = document.getElementById('friendId').value;
+            
+            if (!friendId) {
+                alert('Введите ID пользователя');
+                return;
+            }
+            
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                alert('Сначала войдите в систему');
+                return;
+            }
+            
+            const result = HashStorage.sendFriendRequest(currentUser.id, friendId, 'Привет! Давай дружить!');
+            
+            if (result.success) {
+                alert('Заявка отправлена! ID заявки: ' + result.request.id);
+                document.getElementById('friendId').value = '';
+                showOutgoingRequests();
+            } else {
+                alert('Ошибка: ' + result.message);
+            }
+        }
+        
+        // Показать друзей
+        function showFriends() {
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status error">❌ Сначала войдите в систему</div>';
+                return;
+            }
+            
+            const friends = HashStorage.getFriends(currentUser.id);
+            
+            if (friends.length === 0) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status info">ℹ️ У вас пока нет друзей</div>';
+                return;
+            }
+            
+            let html = `<div class="status success">👥 Ваши друзья (${friends.length}):</div>`;
+            
+            friends.forEach(friend => {
+                html += `
+                    <div class="user-card">
+                        <h4>${friend.friend_name}</h4>
+                        <p>📧 ${friend.email}</p>
+                        <p>🆔 ${friend.friend_id}</p>
+                        <p><small>Дружат с: ${new Date(friend.friends_since).toLocaleDateString()}</small></p>
+                        <button onclick="startChat('${friend.friend_id}')" style="font-size:12px; padding:5px 10px;">
+                            💬 Начать чат
+                        </button>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('friendsResults').innerHTML = html;
+        }
+        
+        // Показать входящие заявки
+        function showIncomingRequests() {
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status error">❌ Сначала войдите в систему</div>';
+                return;
+            }
+            
+            const requests = HashStorage.getFriendRequests(currentUser.id, 'incoming');
+            
+            if (requests.length === 0) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status info">ℹ️ Нет входящих заявок</div>';
+                return;
+            }
+            
+            let html = `<div class="status info">📥 Входящие заявки (${requests.length}):</div>`;
+            
+            requests.forEach(request => {
+                html += `
+                    <div class="user-card">
+                        <h4>${request.sender_name}</h4>
+                        <p>${request.message || 'Хочет добавить вас в друзья'}</p>
+                        <p><small>Отправлено: ${new Date(request.created_at).toLocaleDateString()}</small></p>
+                        <div style="display:flex;gap:10px;margin-top:10px;">
+                            <button onclick="respondToRequest('${request.id}', 'accepted')" 
+                                    style="font-size:12px; padding:5px 10px; background:#00ffaa;">
+                                ✅ Принять
+                            </button>
+                            <button onclick="respondToRequest('${request.id}', 'rejected')" 
+                                    style="font-size:12px; padding:5px 10px; background:#ff6b6b;">
+                                ❌ Отклонить
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('friendsResults').innerHTML = html;
+        }
+        
+        // Показать исходящие заявки
+        function showOutgoingRequests() {
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status error">❌ Сначала войдите в систему</div>';
+                return;
+            }
+            
+            const requests = HashStorage.getFriendRequests(currentUser.id, 'outgoing');
+            
+            if (requests.length === 0) {
+                document.getElementById('friendsResults').innerHTML = 
+                    '<div class="status info">ℹ️ Нет исходящих заявок</div>';
+                return;
+            }
+            
+            let html = `<div class="status info">📤 Исходящие заявки (${requests.length}):</div>`;
+            
+            requests.forEach(request => {
+                html += `
+                    <div class="user-card">
+                        <h4>${request.receiver_name}</h4>
+                        <p>${request.message || 'Заявка отправлена'}</p>
+                        <p><small>Отправлено: ${new Date(request.created_at).toLocaleDateString()}</small></p>
+                        <button onclick="cancelRequest('${request.id}')" 
+                                style="font-size:12px; padding:5px 10px; background:#ff6b6b;">
+                            ❌ Отменить заявку
+                        </button>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('friendsResults').innerHTML = html;
+        }
+        
+        // Ответить на заявку
+        function respondToRequest(requestId, response) {
+            const currentUser = HashStorage.getCurrentUser();
+            
+            if (!currentUser) {
+                alert('Сначала войдите в систему');
+                return;
+            }
+            
+            const result = HashStorage.respondToFriendRequest(requestId, currentUser.id, response);
+            
+            if (result.success) {
+                alert(response === 'accepted' ? 'Заявка принята!' : 'Заявка отклонена');
+                showIncomingRequests();
+                showFriends();
+            } else {
+                alert('Ошибка: ' + result.message);
+            }
+        }
+        
+        // Отменить заявку
+        function cancelRequest(requestId) {
+            respondToRequest(requestId, 'rejected');
+        }
+        
+        // Начать чат (заглушка)
+        function startChat(friendId) {
+            alert(`Чат с пользователем ${friendId} будет открыт в основном интерфейсе`);
+        }
+        
+        // Показать всех пользователей
+        function showAllUsers() {
+            const usersStr = localStorage.getItem('users');
+            
+            if (!usersStr) {
+                document.getElementById('infoResults').innerHTML = 
+                    '<div class="status info">ℹ️ Нет пользователей в системе</div>';
+                return;
+            }
+            
+            const users = JSON.parse(usersStr);
+            
+            let html = `<div class="status info">👥 Все пользователи (${users.length}):</div>`;
+            
+            users.forEach(user => {
+                html += `
+                    <div class="user-card">
+                        <h4>${user.name} ${user.role === 'admin' ? '👑' : ''}</h4>
+                        <p>📧 ${user.email}</p>
+                        <p>🆔 ${user.id}</p>
+                        <p>🎨 Цвет: <span style="color:${user.avatarColor}">${user.avatarColor}</span></p>
+                        <p><small>Тариф: ${user.tariff} | Создан: ${new Date(user.createdAt).toLocaleDateString()}</small></p>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('infoResults').innerHTML = html;
+        }
+        
+        // Показать текущего пользователя
+        function showCurrentUser() {
+            const user = HashStorage.getCurrentUser();
+            
+            if (!user) {
+                document.getElementById('infoResults').innerHTML = 
+                    '<div class="status info">ℹ️ Пользователь не авторизован</div>';
+                return;
+            }
+            
+            let html = `<div class="status success">👤 Текущий пользователь:</div>
+                <div class="user-card">
+                    <h4>${user.name} ${user.role === 'admin' ? '👑' : ''}</h4>
+                    <p>📧 ${user.email}</p>
+                    <p>🆔 ${user.id}</p>
+                    <p>🎨 Цвет: <span style="color:${user.avatarColor}">${user.avatarColor}</span></p>
+                    <p>📊 Тариф: ${user.tariff}</p>
+                    <p><small>Зарегистрирован: ${new Date(user.createdAt).toLocaleDateString()}</small></p>
+                    <p><small>Последний вход: ${new Date(user.lastLogin).toLocaleString()}</small></p>
+                    ${user.activity && user.activity.length > 0 ? 
+                        `<p><small>Активностей: ${user.activity.length}</small></p>` : ''}
+                </div>`;
+            
+            document.getElementById('infoResults').innerHTML = html;
+        }
+        
+        // Показать информацию о хранилище
+        function showStorageInfo() {
+            let totalSize = 0;
+            let items = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const size = new Blob([value]).size;
+                totalSize += size;
+                
+                let itemInfo = {
+                    key: key,
+                    size: size,
+                    valueLength: value.length
+                };
+                
+                try {
+                    const parsed = JSON.parse(value);
+                    if (Array.isArray(parsed)) {
+                        itemInfo.type = 'array';
+                        itemInfo.count = parsed.length;
+                    } else if (typeof parsed === 'object') {
+                        itemInfo.type = 'object';
+                    } else {
+                        itemInfo.type = 'string';
+                    }
+                } catch {
+                    itemInfo.type = 'string';
+                }
+                
+                items.push(itemInfo);
+            }
+            
+            let html = `<div class="status info">💾 Информация о хранилище:</div>
+                <div class="results">
+                    <p>📁 Всего элементов: ${localStorage.length}</p>
+                    <p>💿 Общий размер: ${(totalSize / 1024).toFixed(2)} KB</p>
+                    <hr>`;
+            
+            items.sort((a, b) => b.size - a.size).forEach(item => {
+                html += `<p><strong>${item.key}:</strong> ${(item.size / 1024).toFixed(2)} KB`;
+                
+                if (item.type === 'array') {
+                    html += ` (массив, ${item.count} элементов)`;
+                } else if (item.type === 'object') {
+                    html += ` (объект)`;
+                }
+                
+                html += `</p>`;
+            });
+            
+            html += '</div>';
+            document.getElementById('infoResults').innerHTML = html;
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            checkData();
+            
+            // Автозаполнение для удобства тестирования
+            document.getElementById('loginEmail').value = 'alex@example.com';
+            document.getElementById('loginPassword').value = 'password123';
+            
+            document.getElementById('searchQuery').value = 'user';
+            
+            document.getElementById('friendId').value = 'user_003';
+        });
+    </script>
+</body>
+</html>

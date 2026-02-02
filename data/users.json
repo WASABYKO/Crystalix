@@ -1,0 +1,24 @@
+[
+  {
+    "id": "user_1769824392959_x7j69bmn",
+    "name": "Егор",
+    "email": "egor.markot@gmail.com",
+    "password_hash": "$2b$10$dC0exL0Xu85GDPYM/92PZO4AJjSkgtvJaIup9KHy8cQ0eSWyzqdby",
+    "avatar_color": "#00ffaa",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-01-31T01:53:13.026Z",
+    "last_login": "2026-01-31T01:53:13.026Z"
+  },
+  {
+    "id": "user_1769883134044_depjg2jv",
+    "name": "wasaby",
+    "email": "Wasaby.so2@gmail.com",
+    "password_hash": "$2a$10$zDjsd1aqPtZHgKBojpxQOOfjEpEKfw09bvdvnohJdqw1lnjC50/1e",
+    "avatar_color": "#ff6b6b",
+    "tariff": "free",
+    "role": "user",
+    "created_at": "2026-01-31T18:12:14.111Z",
+    "last_login": "2026-01-31T18:12:14.111Z"
+  }
+]

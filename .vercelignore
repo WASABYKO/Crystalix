@@ -1,0 +1,43 @@
+# ============================================
+# Vercel Ignore Rules
+# ============================================
+# Эти файлы не будут загружены на Vercel,
+# так как сервер деплоится на Railway/Render
+
+# Серверные файлы (не нужны на Vercel)
+src/
+database.js
+server.js
+test-runner.js
+messageso.js
+script.js
+your-service-account-key.json
+
+# Node.js специфичные (не нужны для статики)
+package.json
+package-lock.json
+node_modules/
+
+# Конфигурация разработки
+.env
+.env.local
+.env.example
+
+# Данные и логи
+data/
+logs/
+uploads/
+
+# Документация
+DOCUMENTATION.md
+MIGRATION.md
+TESTING.md
+INTEGRATION.md
+ARCHITECTURE.md
+
+# Тесты
+public/js/managers/tests/
+
+# Git
+.git
+.gitignore

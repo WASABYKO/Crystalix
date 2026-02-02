@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель | TechTariff</title>
+
+    <!-- CSP-мета: разрешает внешние CDN и inline-скрипты -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/;
+        img-src 'self' data: https:;
+        connect-src 'self' ws: wss: ws://localhost:3000 http://localhost:3000;
+    ">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/loader.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Лоадер -->
+    <div id="globalLoader" class="loader-container">
+        <div class="particles" id="particles"></div>
+        <div class="loader-overlay"></div>
+        <div class="loader-text">
+            <div class="loader-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+            <p>Загрузка админ панели</p>
+        </div>
+    </div>
+
+    <!-- Шапка сайта -->
+    <header id="siteHeader"></header>
+
+    <!-- Основной контент -->
+    <main class="admin-container">
+        <div class="container">
+            <!-- Заголовок -->
+            <div class="admin-header">
+                <h1><i class="fas fa-crown"></i> Админ панель</h1>
+                <p class="admin-subtitle">Управление системой TechTariff</p>
+            </div>
+
+            <!-- Навигация -->
+            <div class="admin-nav">
+                <button class="admin-nav-btn active" data-tab="stats">
+                    <i class="fas fa-chart-bar"></i> Статистика
+                </button>
+                <button class="admin-nav-btn" data-tab="users">
+                    <i class="fas fa-users"></i> Пользователи
+                </button>
+                <button class="admin-nav-btn" data-tab="tariffs">
+                    <i class="fas fa-list-alt"></i> Тарифы
+                </button>
+                <button class="admin-nav-btn" data-tab="settings">
+                    <i class="fas fa-cog"></i> Настройки
+                </button>
+                <button class="admin-nav-btn" data-tab="actions">
+                    <i class="fas fa-history"></i> Действия
+                </button>
+            </div>
+
+            <!-- Контент -->
+            <div class="admin-content">
+                <!-- Статистика -->
+                <div class="admin-tab active" id="statsTab">
+                    <h2><i class="fas fa-chart-bar"></i> Статистика системы</h2>
+                    <div class="stats-container" id="adminStats">
+                        <!-- Статистика загружается через JS -->
+                    </div>
+                </div>
+
+                <!-- Пользователи -->
+                <div class="admin-tab" id="usersTab">
+                    <div class="tab-header">
+                        <h2><i class="fas fa-users"></i> Управление пользователями</h2>
+                        <div class="tab-actions">
+                            <button class="btn btn-outline" id="refreshUsersBtn">
+                                <i class="fas fa-sync-alt"></i> Обновить
+                            </button>
+                        </div>
+                    </div>
+                    <div class="users-container" id="adminUsers">
+                        <!-- Пользователи загружаются через JS -->
+                    </div>
+                </div>
+
+                <!-- Тарифы -->
+                <div class="admin-tab" id="tariffsTab">
+                    <div class="tab-header">
+                        <h2><i class="fas fa-list-alt"></i> Управление тарифами</h2>
+                        <button class="btn btn-primary" id="addTariffBtn">
+                            <i class="fas fa-plus"></i> Добавить тариф
+                        </button>
+                    </div>
+                    <div class="tariffs-admin-container" id="adminTariffs">
+                        <!-- Тарифы загружаются через JS -->
+                    </div>
+                </div>
+
+                <!-- Настройки -->
+                <div class="admin-tab" id="settingsTab">
+                    <h2><i class="fas fa-cog"></i> Системные настройки</h2>
+                    <div class="settings-container" id="adminSettings">
+                        <!-- Настройки загружаются через JS -->
+                    </div>
+                </div>
+
+                <!-- Действия -->
+                <div class="admin-tab" id="actionsTab">
+                    <div class="tab-header">
+                        <h2><i class="fas fa-history"></i> История действий</h2>
+                        <button class="btn btn-outline" id="clearActionsBtn">
+                            <i class="fas fa-trash"></i> Очистить
+                        </button>
+                    </div>
+                    <div class="actions-container" id="adminActions">
+                        <!-- Действия загружаются через JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/components/loader.js"></script>
+    <script src="/js/components/header.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/admin.js"></script>
+
+    <!-- Менеджеры -->
+    <script src="/js/managers/TokenManager.js"></script>
+    <script src="/js/managers/AuthManager.js"></script>
+    <script src="/js/managers/ConnectionManager.js"></script>
+    <script src="/js/managers/RetryManager.js"></script>
+    <script src="/js/managers/SafeInitializer.js"></script>
+    <script src="/js/managers/WebSocketManager.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{
+  "name": "techtariff-messenger",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TechTariff Messenger — современный мессенджер с реал-тайм чатами, авторизацией и загрузкой файлов",
+  "main": "src/server/index.js",
+  
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "nodemon src/server/index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write \"src/**/*.js\"",
+    "test": "echo \"Тесты пока не реализованы\" && exit 0",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "messenger",
+    "realtime-chat",
+    "websocket",
+    "jwt",
+    "express",
+    "node.js"
+  ],
+  "author": "TechTariff",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.5",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules",
+      "logs",
+      "uploads",
+      ".git",
+      ".env"
+    ],
+    "delay": 1000
+  }
+}
