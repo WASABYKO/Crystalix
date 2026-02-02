@@ -12,10 +12,13 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const Database = require('./database'); // ← от src/server/app.js → src/server/database/index.js
-const { requestLogger } = require('./logger'); // Логгер HTTP запросов
+const Database = require('./database');
+const { requestLogger } = require('./logger');
 
 const app = express();
+
+// Доверяем прокси для корректной работы rate limiting
+app.set('trust proxy', 1);
 
 // Логирование всех HTTP запросов
 app.use(requestLogger);
@@ -135,27 +138,21 @@ const authMiddleware = (req, res, next) => {
 // Регистрация
 app.post('/api/register', async (req, res) => {
   const { name, email, password } = req.body;
-  console.log('[REGISTER] Получены данные:', { name, email, password: password ? '***' : 'MISSING' });
   
   if (!name || !email || !password) {
-    console.log('[REGISTER] Ошибка: не все поля заполнены');
     return res.status(400).json({ success: false, message: 'Все поля обязательны' });
   }
 
-  console.log('[REGISTER] Создание пользователя...');
   const result = Database.createUser({ name, email, password });
-  console.log('[REGISTER] Результат:', result);
   res.json(result);
 });
 
 // Логин
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log('[LOGIN] Попытка входа для:', email);
   
   const user = Database.getUserByEmail(email);
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-    console.log('[LOGIN] Ошибка: неверный email или пароль');
     return res.status(401).json({ success: false, message: 'Неверный email или пароль' });
   }
 
@@ -164,7 +161,6 @@ app.post('/api/login', async (req, res) => {
     process.env.JWT_SECRET || 'default-dev-secret-change-in-production',
     { expiresIn: '1d' }
   );
-  console.log('[LOGIN] Успешный вход для userId:', user.id);
 
   res.json({
     success: true,
@@ -224,21 +220,6 @@ app.post('/api/friends/request', authMiddleware, (req, res) => {
   const { receiverId, message } = req.body;
   const result = Database.sendFriendRequest(req.user.userId, receiverId, message || '');
   
-  if (result.success) {
-    // Уведомляем получателя через WebSocket если он онлайн
-    const sender = Database.getUserById(req.user.userId);
-    const { broadcastToUser } = require('./ws');
-    broadcastToUser(receiverId, {
-      type: 'FRIEND_REQUEST',
-      requestId: result.requestId,
-      from: req.user.userId,
-      fromName: sender?.name || 'Неизвестный',
-      message: message || '',
-      timestamp: Date.now()
-    });
-    console.log(`[API] Пользователь ${req.user.userId} отправил заявку пользователю ${receiverId}`);
-  }
-  
   res.json(result);
 });
 
@@ -248,41 +229,9 @@ app.get('/api/friends/requests', authMiddleware, (req, res) => {
 });
 
 app.post('/api/friends/request/:id/respond', authMiddleware, (req, res) => {
-  const { response } = req.body; // 'accepted' / 'rejected'
-  const result = Database.respondToFriendRequest(req.params.id, req.user.userId, response);
-  
-  if (result.success) {
-    // Получаем данные заявки для уведомления отправителя
-    const allRequests = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, './data/friend_requests.json'), 'utf8'));
-    const request = allRequests.find(r => r.id === req.params.id);
-    
-    if (request) {
-      const user = Database.getUserById(req.user.userId);
-      const { broadcastToUser } = require('./ws');
-      
-      if (response === 'accepted') {
-        // Уведомляем отправителя о принятии
-        broadcastToUser(request.sender, {
-          type: 'FRIEND_ACCEPT',
-          from: req.user.userId,
-          fromName: user?.name || 'Неизвестный',
-          timestamp: Date.now()
-        });
-        console.log(`[API] Пользователь ${req.user.userId} принял заявку от ${request.sender}`);
-      } else {
-        // Уведомляем об отклонении
-        broadcastToUser(request.sender, {
-          type: 'FRIEND_REJECT',
-          from: req.user.userId,
-          fromName: user?.name || 'Неизвестный',
-          timestamp: Date.now()
-        });
-        console.log(`[API] Пользователь ${req.user.userId} отклонил заявку от ${request.sender}`);
-      }
-    }
-  }
-  
-  res.json(result);
+  // Теперь дружба создаётся сразу при отправке заявки
+  // Этот эндпоинт оставлен для обратной совместимости
+  res.json({ success: true, message: 'Дружба уже создана' });
 });
 
 // Чаты
@@ -340,10 +289,7 @@ app.post('/api/chats/:chatId/messages', authMiddleware, async (req, res) => {
   // Рассылаем всем участникам чата через WebSocket
   const { broadcastToParticipants } = require('./ws');
   const participants = Database.getChatParticipants(req.params.chatId);
-  console.log(`[WS] Рассылка сообщения ${result.messageId} участникам:`, participants);
-  
-  const sent = broadcastToParticipants(participants, broadcastMsg);
-  console.log(`[WS] Сообщение отправлено ${sent.length} участникам`);
+  broadcastToParticipants(participants, broadcastMsg);
   
   res.json(result);
 });
@@ -407,16 +353,12 @@ const avatarUpload = multer({
 
 // Загрузка/обновление аватарки
 app.post('/api/profile/avatar', authMiddleware, avatarUpload.single('avatar'), async (req, res) => {
-  console.log('[AVATAR] Загрузка аватарки для userId:', req.user.userId);
-  
   if (!req.file) {
-    console.log('[AVATAR] Ошибка: файл не загружен');
     return res.status(400).json({ success: false, message: 'Файл не загружен' });
   }
 
   const user = Database.getUserById(req.user.userId);
   if (!user) {
-    console.log('[AVATAR] Ошибка: пользователь не найден');
     return res.status(404).json({ success: false, message: 'Пользователь не найден' });
   }
 
@@ -427,9 +369,8 @@ app.post('/api/profile/avatar', authMiddleware, avatarUpload.single('avatar'), a
       const historyPath = path.join(avatarsHistoryDir, `${user.id}_${Date.now()}_old${path.extname(user.avatar.original)}`);
       try {
         fs.renameSync(oldAvatarPath, historyPath);
-        console.log('[AVATAR] Старая аватарка сохранена в историю:', historyPath);
       } catch (err) {
-        console.log('[AVATAR] Не удалось сохранить историю:', err.message);
+        // Игнорируем ошибку
       }
     }
   }
@@ -443,8 +384,6 @@ app.post('/api/profile/avatar', authMiddleware, avatarUpload.single('avatar'), a
   // Обновляем в БД
   const result = Database.updateUserAvatar(req.user.userId, avatarData);
   
-  console.log('[AVATAR] Аватарка загружена:', avatarData);
-  
   res.json({
     success: true,
     avatar: avatarData,
@@ -454,8 +393,6 @@ app.post('/api/profile/avatar', authMiddleware, avatarUpload.single('avatar'), a
 
 // Получение аватарки пользователя
 app.get('/api/profile/avatar/:userId', authMiddleware, (req, res) => {
-  console.log('[AVATAR] Получение аватарки для userId:', req.params.userId);
-  
   const user = Database.getUserById(req.params.userId);
   if (!user) {
     return res.status(404).json({ success: false, message: 'Пользователь не найден' });
@@ -469,8 +406,6 @@ app.get('/api/profile/avatar/:userId', authMiddleware, (req, res) => {
 
 // Удаление аватарки
 app.delete('/api/profile/avatar', authMiddleware, (req, res) => {
-  console.log('[AVATAR] Удаление аватарки для userId:', req.user.userId);
-  
   const user = Database.getUserById(req.user.userId);
   if (!user) {
     return res.status(404).json({ success: false, message: 'Пользователь не найден' });
@@ -483,16 +418,13 @@ app.delete('/api/profile/avatar', authMiddleware, (req, res) => {
       const historyPath = path.join(avatarsHistoryDir, `${user.id}_${Date.now()}_deleted${path.extname(user.avatar.original)}`);
       try {
         fs.renameSync(oldAvatarPath, historyPath);
-        console.log('[AVATAR] Удаленная аватарка сохранена в историю');
       } catch (err) {
-        console.log('[AVATAR] Не удалось сохранить историю:', err.message);
+        // Игнорируем ошибку
       }
     }
   }
 
   const result = Database.updateUserAvatar(req.user.userId, null);
-  
-  console.log('[AVATAR] Аватарка удалена');
   
   res.json({
     success: true,

@@ -48,13 +48,11 @@ class WebSocketManager {
     shouldConnect() {
         // Не подключаемся на странице авторизации
         if (this.isAuthPage()) {
-            console.log('[WebSocketManager] Страница авторизации - пропускаем подключение');
             return false;
         }
 
         // Не подключаемся, если нет токена
         if (!this.authToken) {
-            console.log('[WebSocketManager] Токен отсутствует - пропускаем подключение');
             return false;
         }
 
@@ -66,7 +64,6 @@ class WebSocketManager {
      */
     async initialize(url = null) {
         if (this.initialized) {
-            console.warn('⚠️ WebSocketManager уже инициализирован');
             return this;
         }
 
@@ -88,7 +85,6 @@ class WebSocketManager {
         // Подписка на события TokenManager
         if (typeof TokenManager !== 'undefined') {
             TokenManager.on('tokenChanged', ({ token }) => {
-                console.log('[WebSocketManager] Токен изменен, обновляем');
                 this.authToken = token;
                 if (this.isConnected) {
                     this.sendAuthRefresh();
@@ -99,7 +95,6 @@ class WebSocketManager {
             });
 
             TokenManager.on('tokenCleared', () => {
-                console.log('[WebSocketManager] Токен очищен, отключаемся');
                 this.disconnect();
             });
         }
@@ -122,13 +117,10 @@ class WebSocketManager {
         this.setupNavigationHandler();
 
         this.initialized = true;
-        console.log('✅ WebSocketManager инициализирован');
 
         // Автоматическое подключение только если есть токен и не страница авторизации
         if (this.shouldConnect()) {
             this.connect();
-        } else {
-            console.log('[WebSocketManager] Подключение отложено (нет токена или страница авторизации)');
         }
 
         return this;
@@ -146,32 +138,23 @@ class WebSocketManager {
 
                 switch (type) {
                     case 'connected':
-                        console.log('[WebSocketManager] Другая вкладка подключилась к WebSocket');
-                        // Если эта вкладка подключена, можно отключиться для экономии ресурсов
                         if (this.isConnected && !this.isPrimaryTab) {
-                            console.log('[WebSocketManager] Отключаемся, т.к. другая вкладка уже подключена');
                             this.disconnect();
                         }
                         break;
 
                     case 'disconnected':
-                        console.log('[WebSocketManager] Другая вкладка отключилась от WebSocket');
-                        // Если эта вкладка является основной, переподключаемся
                         if (!this.isConnected && this.isPrimaryTab) {
-                            console.log('[WebSocketManager] Переподключаемся как основная вкладка');
                             this.connect();
                         }
                         break;
 
                     case 'auth_success':
-                        console.log('[WebSocketManager] Другая вкладка успешно авторизовалась');
                         break;
                 }
             };
-
-            console.log('[WebSocketManager] BroadcastChannel настроен');
         } catch (e) {
-            console.warn('[WebSocketManager] BroadcastChannel не поддерживается:', e);
+            // BroadcastChannel не поддерживается
         }
     }
 
@@ -201,9 +184,6 @@ class WebSocketManager {
 
         // Определяем основную вкладку
         this.isPrimaryTab = !sessionStorage.getItem('websocket_secondary_tab');
-        if (!this.isPrimaryTab) {
-            console.log('[WebSocketManager] Эта вкладка является вторичной');
-        }
     }
     
     /**
@@ -224,12 +204,6 @@ class WebSocketManager {
         if (typeof TokenManager !== 'undefined') {
             const token = TokenManager.getToken();
             if (token) {
-                console.log('[WebSocketManager] Токен получен через TokenManager:', {
-                    length: token?.length,
-                    preview: token?.substring(0, 30) + '...',
-                    parts: token?.split('.').length,
-                    isValidJWT: token?.split('.').length === 3
-                });
                 return token;
             }
         }
@@ -238,7 +212,6 @@ class WebSocketManager {
         if (typeof HashStorage !== 'undefined' && HashStorage.get) {
             const session = HashStorage.get('session');
             if (session?.token) {
-                console.log('[WebSocketManager] Токен получен из HashStorage session');
                 return session.token;
             }
         }
@@ -246,29 +219,21 @@ class WebSocketManager {
         // Проверяем techtariff_auth_token (используется AuthManager)
         const techtariffToken = localStorage.getItem('techtariff_auth_token');
         if (techtariffToken) {
-            console.log('[WebSocketManager] Токен получен из localStorage techtariff_auth_token:', {
-                length: techtariffToken?.length,
-                preview: techtariffToken?.substring(0, 30) + '...',
-                parts: techtariffToken?.split('.').length
-            });
             return techtariffToken;
         }
 
         // Проверяем authToken (для обратной совместимости)
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            console.log('[WebSocketManager] Токен получен из localStorage authToken');
             return authToken;
         }
 
         // Проверяем sessionStorage
         const sessionToken = sessionStorage.getItem('authToken');
         if (sessionToken) {
-            console.log('[WebSocketManager] Токен получен из sessionStorage');
             return sessionToken;
         }
 
-        console.log('[WebSocketManager] Токен не найден нигде');
         return null;
     }
     
@@ -293,7 +258,6 @@ class WebSocketManager {
      */
     connect() {
         if (this.isConnected || this.isConnecting) {
-            console.warn('⚠️ Уже подключено или выполняется подключение');
             return;
         }
         
@@ -313,10 +277,7 @@ class WebSocketManager {
             this.socket.onclose = (event) => this.handleClose(event);
             this.socket.onerror = (event) => this.handleError(event);
             
-            console.log('🔌 Попытка подключения к WebSocket...');
-            
         } catch (error) {
-            console.error('❌ Ошибка создания WebSocket:', error);
             this.handleConnectionError(error);
         }
     }
@@ -325,8 +286,6 @@ class WebSocketManager {
      * Обработка открытия соединения
      */
     handleOpen(event) {
-        console.log('✅ WebSocket подключен');
-
         this.isConnected = true;
         this.isConnecting = false;
         this.reconnectAttempts = 0;
@@ -384,7 +343,6 @@ class WebSocketManager {
                 const pending = this.pendingMessages.get(data.id);
                 pending.resolve(data);
                 this.pendingMessages.delete(data.id);
-                console.log(`[WebSocketManager] Получен ACK для сообщения ${data.id}`);
                 return; // Не диспетчеризуем ACK сообщения
             }
             
@@ -392,7 +350,7 @@ class WebSocketManager {
             this.dispatchMessage(data);
             
         } catch (error) {
-            console.error('❌ Ошибка обработки сообщения:', error);
+            // Игнорируем ошибки парсинга
         }
     }
     
@@ -441,7 +399,6 @@ class WebSocketManager {
      */
     handleAck(data) {
         // ACK теперь обрабатывается в handleMessage, этот метод оставлен для совместимости
-        console.log(`[WebSocketManager] ACK получен:`, data.messageId);
     }
     
     /**
@@ -449,13 +406,10 @@ class WebSocketManager {
      * ИСПРАВЛЕНО: Добавлена диспетчеризация CustomEvent 'newMessage' для совместимости с UIManager
      */
     handleChatMessage(data) {
-        console.log('📩 Получено сообщение:', data);
         this.emit('chatMessage', data);
         
         // ДИСПЕТЧЕРИЗУЕМ CustomEvent 'newMessage' для совместимости с UIManager
-        // Это обеспечивает работу со старым кодом, который ожидает событие 'newMessage'
         window.dispatchEvent(new CustomEvent('newMessage', { detail: data }));
-        console.log('[WebSocketManager] CustomEvent newMessage отправлен для messageId:', data.messageId);
         
         // Уведомляем HashStorage для совместимости
         if (typeof HashStorage !== 'undefined') {
@@ -467,7 +421,6 @@ class WebSocketManager {
      * Обработка входящей заявки в друзья
      */
     handleFriendRequest(data) {
-        console.log('👥 Получена заявка в друзья:', data);
         this.emit('friendRequest', data);
         
         if (typeof HashStorage !== 'undefined') {
@@ -479,7 +432,6 @@ class WebSocketManager {
      * Обработка принятия заявки в друзья
      */
     handleFriendAccepted(data) {
-        console.log('✅ Заявка в друзья принята:', data);
         this.emit('friendAccepted', data);
         
         if (typeof HashStorage !== 'undefined') {
@@ -492,8 +444,6 @@ class WebSocketManager {
      * ИСПРАВЛЕНО: Добавлена диспетчеризация CustomEvent для совместимости с UIManager
      */
     handleFriendRequestWS(data) {
-        console.log('👥 Получен FRIEND_REQUEST:', data);
-        
         // Уведомляем подписчиков через внутренний emit
         this.emit('FRIEND_REQUEST', data);
         

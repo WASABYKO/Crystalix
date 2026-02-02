@@ -239,6 +239,18 @@ body {
     gap: 1px;
     background: var(--glass-border);
     contain: layout;
+    transition: padding-top 0.3s ease;
+}
+
+/* Когда активна строка звонка */
+body.call-status-bar-active .messages-container {
+    padding-top: 56px;
+}
+
+@media (max-width: 480px) {
+    body.call-status-bar-active .messages-container {
+        padding-top: 48px;
+    }
 }
 
 /* =============== 5. САЙДБАР =============== */

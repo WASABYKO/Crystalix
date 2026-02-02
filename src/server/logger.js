@@ -1,4 +1,5 @@
-// src/server/logger.js - Централизованное логирование
+// src/server/logger.js - Централизованное логирование (только в файл)
+// В консоль логи НЕ выводятся для безопасности
 const fs = require('fs');
 const path = require('path');
 
@@ -21,44 +22,6 @@ function writeToFile(message) {
     fs.appendFileSync(LOG_FILE, logMessage, { encoding: 'utf8' });
 }
 
-// Перехват console.log
-const originalLog = console.log;
-const originalError = console.error;
-const originalWarn = console.warn;
-const originalInfo = console.info;
-
-console.log = function(...args) {
-    const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-    ).join(' ');
-    writeToFile(`[LOG] ${message}`);
-    originalLog.apply(console, args);
-};
-
-console.error = function(...args) {
-    const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-    ).join(' ');
-    writeToFile(`[ERROR] ${message}`);
-    originalError.apply(console, args);
-};
-
-console.warn = function(...args) {
-    const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-    ).join(' ');
-    writeToFile(`[WARN] ${message}`);
-    originalWarn.apply(console, args);
-};
-
-console.info = function(...args) {
-    const message = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-    ).join(' ');
-    writeToFile(`[INFO] ${message}`);
-    originalInfo.apply(console, args);
-};
-
 // Логирование HTTP запросов
 function requestLogger(req, res, next) {
     const start = Date.now();
@@ -67,7 +30,6 @@ function requestLogger(req, res, next) {
         const duration = Date.now() - start;
         const log = `[HTTP] ${req.method} ${req.url} ${res.statusCode} ${duration}ms`;
         writeToFile(log);
-        originalLog(log);
     });
     
     next();
@@ -77,20 +39,17 @@ function requestLogger(req, res, next) {
 function wsLogger(type, data) {
     const message = typeof data === 'object' ? JSON.stringify(data) : String(data);
     writeToFile(`[WS] ${type}: ${message}`);
-    originalLog(`[WS] ${type}:`, data);
 }
 
 // Логирование базы данных
 function dbLogger(operation, data) {
     const message = typeof data === 'object' ? JSON.stringify(data) : String(data);
     writeToFile(`[DB] ${operation}: ${message}`);
-    originalLog(`[DB] ${operation}:`, data);
 }
 
 // Очистка лог-файла
 function clearLogs() {
     fs.writeFileSync(LOG_FILE, '');
-    originalLog('[LOGGER] Логи очищены');
 }
 
 // Получение логов

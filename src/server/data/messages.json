@@ -2612,5 +2612,25 @@
     "timestamp": "2026-02-02T17:21:30.962Z",
     "createdAt": "2026-02-02T17:21:30.962Z",
     "status": "sent"
+  },
+  {
+    "id": "msg_1770063072974",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "хуй",
+    "type": "text",
+    "timestamp": "2026-02-02T20:11:12.974Z",
+    "createdAt": "2026-02-02T20:11:12.974Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770063805350",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "привет",
+    "type": "text",
+    "timestamp": "2026-02-02T20:23:25.350Z",
+    "createdAt": "2026-02-02T20:23:25.350Z",
+    "status": "sent"
   }
 ]

@@ -19,7 +19,6 @@ const messageDeliveryStatus = new Map();
 function broadcastToUser(userId, message) {
   const userConnections = clients.get(userId);
   if (!userConnections) {
-    // console.log(`[WS] Пользователь ${userId} не в сети`);
     return 0;
   }
   
@@ -33,7 +32,6 @@ function broadcastToUser(userId, message) {
     }
   }
   
-  // console.log(`[WS] Сообщение "${message.type}" отправлено ${sentCount} соединениям пользователя ${userId}`);
   return sentCount;
 }
 
@@ -76,8 +74,6 @@ function setupWebSocket(server) {
   wss.on('connection', (ws, req) => {
     let userId = null;
     let connectedAt = Date.now();
-    
-    console.log(`[WS] Новое соединение с ${req.socket.remoteAddress}`);
 
     // Обработка входящих сообщений
     ws.on('message', async (data) => {
@@ -89,7 +85,6 @@ function setupWebSocket(server) {
           const token = msg.token;
           
           if (!token) {
-            console.log('[WS] Auth: токен отсутствует');
             ws.send(JSON.stringify({ type: 'auth_error', message: 'Токен отсутствует' }));
             ws.close(4001, 'No token');
             return;
@@ -105,8 +100,6 @@ function setupWebSocket(server) {
             }
             clients.get(userId).add(ws);
             
-            console.log(`[WS] Пользователь ${userId} авторизован (всего соединений: ${clients.get(userId).size})`);
-            
             // Подтверждаем авторизацию
             ws.send(JSON.stringify({ 
               type: 'auth_success', 
@@ -118,7 +111,6 @@ function setupWebSocket(server) {
             broadcastUserStatus(userId, 'online');
             
           } catch (e) {
-            console.error('[WS] Auth error:', e.message);
             ws.send(JSON.stringify({ type: 'auth_error', message: 'Недействительный токен' }));
             ws.close(4002, 'Invalid token');
           }
@@ -127,7 +119,6 @@ function setupWebSocket(server) {
 
         // Если не авторизован - игнорируем
         if (!userId) {
-          console.warn('[WS] Сообщение от неавторизованного клиента');
           ws.send(JSON.stringify({ type: 'error', message: 'Сначала авторизуйтесь' }));
           return;
         }
@@ -197,18 +188,16 @@ function setupWebSocket(server) {
             break;
           
           default:
-            console.log(`[WS] Неизвестный тип сообщения: ${msg.type}`);
+            break;
         }
-        
       } catch (e) {
-        console.error('[WS] Ошибка обработки сообщения:', e.message);
+        // Логируем ошибку только в файл
       }
     });
 
     // Обработка закрытия соединения
     ws.on('close', (event) => {
       const reason = event.reason || 'client disconnect';
-      console.log(`[WS] Соединение закрыто: userId=${userId}, код=${event.code}, причина=${reason}`);
       
       if (userId && clients.has(userId)) {
         const userConnections = clients.get(userId);
@@ -217,17 +206,14 @@ function setupWebSocket(server) {
         // Если это было последнее соединение пользователя
         if (userConnections.size === 0) {
           clients.delete(userId);
-          console.log(`[WS] Пользователь ${userId} полностью отключился`);
           broadcastUserStatus(userId, 'offline');
-        } else {
-          console.log(`[WS] У пользователя ${userId} осталось ${userConnections.size} соединений`);
         }
       }
     });
 
     // Обработка ошибок
     ws.on('error', (error) => {
-      console.error(`[WS] Ошибка соединения userId=${userId}:`, error.message);
+      // Игнорируем ошибки
     });
 
     // Heartbeat для определения мертвых соединений
@@ -241,7 +227,6 @@ function setupWebSocket(server) {
   const heartbeatInterval = setInterval(() => {
     wss.clients.forEach((ws) => {
       if (ws.isAlive === false) {
-        console.log(`[WS] Таймаут соединения, закрываем`);
         return ws.terminate();
       }
       ws.isAlive = false;
@@ -297,16 +282,9 @@ async function handleChatMessage(ws, senderId, msg) {
   // Получаем участников чата
   const participants = Database.getChatParticipants(chatId);
   
-  if (participants.length === 0) {
-    console.warn(`[WS] У чата ${chatId} нет участников`);
-  }
-
   // Рассылаем ВСЕМ участникам ВКЛЮЧАЯ отправителя
-  // Это важно для синхронизации состояния
   const sent = broadcastToParticipants(participants, broadcastMsg, null);
   
-  console.log(`[WS] Сообщение ${result.messageId} отправлено ${sent.length}/${participants.length} участникам`);
-
   // Отправляем подтверждение отправителю
   ws.send(JSON.stringify({
     type: 'ack',
@@ -434,8 +412,6 @@ module.exports = {
 function handleCallOffer(callerId, msg) {
   const { callId, to, offer, isVideo, timestamp } = msg;
   
-  console.log(`[WS] Входящий звонок ${callId} от ${callerId} к ${to}, видео: ${isVideo}`);
-  
   // Получаем информацию о звонящем
   const caller = Database.getUserById(callerId);
   
@@ -456,8 +432,6 @@ function handleCallOffer(callerId, msg) {
  */
 function handleCallAnswer(calleeId, msg) {
   const { callId, to, answer, timestamp } = msg;
-  
-  console.log(`[WS] Ответ на звонок ${callId} от ${calleeId}`);
   
   // Пересылаем ответ звонящему
   broadcastToUser(to, {
@@ -490,8 +464,6 @@ function handleCallIceCandidate(senderId, msg) {
  */
 function handleCallReject(rejectorId, msg) {
   const { callId, to, reason, timestamp } = msg;
-  
-  console.log(`[WS] Звонок ${callId} отклонён ${rejectorId}, причина: ${reason}`);
   
   // Уведомляем звонящего
   broadcastToUser(to, {

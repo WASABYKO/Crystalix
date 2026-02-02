@@ -26,7 +26,6 @@ function getWebSocketManager() {
     connect() {
       const token = getAuthToken();
       if (!token) {
-        console.log('[WS] Токен не найден, отложено подключение');
         this.updateConnectionStatus('waiting', 'Ожидание авторизации...');
         return;
       }
@@ -39,19 +38,15 @@ function getWebSocketManager() {
       const port = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
       const wsUrl = `${protocol}//${host}:${port}/ws`;
       
-      console.log('[WS] Подключение к:', wsUrl);
-      
       try {
         this.ws = new WebSocket(`${wsUrl}?token=${token}`);
-        this.wsToken = token; // Сохраняем токен для авторизации
+        this.wsToken = token;
         
         this.ws.onopen = () => {
-          console.log('[WS] Подключено, отправляем авторизацию...');
           this.reconnectAttempts = 0;
           this.isConnected = true;
           this.isConnecting = false;
           this.updateConnectionStatus('connected', 'Подключено');
-          // Отправляем сообщение авторизации
           this.ws.send(JSON.stringify({ type: 'auth', token: this.wsToken }));
           this.emit('connected', {});
         };
@@ -59,15 +54,13 @@ function getWebSocketManager() {
         this.ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log('[WS] Получено:', data.type, data);
             this.handleMessage(data);
           } catch (e) {
-            console.error('[WS] Ошибка парсинга:', e);
+            // Игнорируем ошибки парсинга
           }
         };
         
         this.ws.onclose = (event) => {
-          console.log('[WS] Отключено:', event.code, event.reason);
           this.isConnected = false;
           this.isAuthorized = false;
           this.isConnecting = false;
@@ -82,13 +75,11 @@ function getWebSocketManager() {
         };
         
         this.ws.onerror = (error) => {
-          console.error('[WS] Ошибка:', error);
           this.updateConnectionStatus('error', 'Ошибка соединения');
           this.emit('error', {});
         };
         
       } catch (error) {
-        console.error('[WS] Не удалось подключиться:', error);
         this.updateConnectionStatus('error', 'Ошибка подключения');
       }
     },
@@ -98,14 +89,12 @@ function getWebSocketManager() {
       this.reconnectAttempts++;
       const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000);
       
-      console.log(`[WS] Переподключение через ${delay}мс (попытка ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
       this.updateConnectionStatus('reconnecting', `Переподключение ${this.reconnectAttempts}...`);
       
       setTimeout(() => {
         if (this.reconnectAttempts < this.maxReconnectAttempts) {
           this.connect();
         } else {
-          console.log('[WS] Максимальное количество попыток подключения');
           this.updateConnectionStatus('failed', 'Не удалось подключиться');
         }
       }, delay);
@@ -139,7 +128,6 @@ function getWebSocketManager() {
           window.dispatchEvent(new CustomEvent('newMessage', { detail: data }));
           break;
         case 'ack':
-          console.log('[WS] Подтверждение доставки:', data.messageId);
           window.dispatchEvent(new CustomEvent('messageAck', { detail: data }));
           break;
         case 'typing':
@@ -156,12 +144,10 @@ function getWebSocketManager() {
           window.dispatchEvent(new CustomEvent('messageDelivered', { detail: data }));
           break;
         case 'auth_success':
-          console.log('[WS] Авторизация успешна, userId:', data.userId);
           this.isAuthorized = true;
           this.updateConnectionStatus('authorized', 'Авторизован');
           break;
         case 'auth_error':
-          console.error('[WS] Ошибка авторизации:', data.message);
           this.isAuthorized = false;
           this.updateConnectionStatus('error', 'Ошибка авторизации');
           break;
@@ -169,26 +155,19 @@ function getWebSocketManager() {
           window.dispatchEvent(new CustomEvent('userStatus', { detail: data }));
           break;
         case 'pong':
-          // Ответ на ping
           break;
         case 'error':
-          console.error('[WS] Ошибка сервера:', data.message);
           break;
         // ============ ЗАЯВКИ В ДРУЗЬЯ ============
         case 'FRIEND_REQUEST':
-          console.log('[WS] Получена заявка в друзья:', data);
           window.dispatchEvent(new CustomEvent('friendRequest', { detail: data }));
           this.updateRequestsBadge();
           break;
         case 'FRIEND_ACCEPT':
-          console.log('[WS] Заявка принята:', data);
           window.dispatchEvent(new CustomEvent('friendAccepted', { detail: data }));
-          this.showToast(`${data.fromName || 'Пользователь'} принял вашу заявку!`, 'success');
           break;
         case 'FRIEND_REJECT':
-          console.log('[WS] Заявка отклонена:', data);
           window.dispatchEvent(new CustomEvent('friendRejected', { detail: data }));
-          this.showToast(`${data.fromName || 'Пользователь'} отклонил заявку`, 'info');
           break;
         case 'CALL_OFFER':
         case 'CALL_ANSWER':
@@ -196,10 +175,9 @@ function getWebSocketManager() {
         case 'CALL_REJECT':
         case 'CALL_END':
         case 'CALL_TIMEOUT':
-          // Обрабатывается CallManager через listeners
           break;
         default:
-          console.log('[WS] Неизвестный тип:', type);
+          break;
       }
       
       // Уведомляем подписчиков
@@ -217,7 +195,6 @@ function getWebSocketManager() {
         this.ws.send(JSON.stringify(data));
         return true;
       }
-      console.warn('[WS] Не подключен, невозможно отправить');
       return false;
     },
     
@@ -549,14 +526,7 @@ class UIManager {
         });
       }
       
-      console.log('[UIManager] Данные загружены:', {
-        user: this.currentUser?.name,
-        friendsCount: this.friends.length,
-        chatsCount: this.chats.length
-      });
-      
     } catch (error) {
-      console.error('Ошибка загрузки данных:', error);
       this.showToast('Ошибка загрузки данных', 'error');
     }
   }
@@ -677,25 +647,20 @@ class UIManager {
     
     // ============ ОБРАБОТЧИКИ ЗАЯВОК В ДРУЗЬЯ ============
     window.addEventListener('friendRequest', (e) => {
-      console.log('[UIManager] Получена заявка в друзья:', e.detail);
       this.handleFriendRequest(e.detail);
     });
     
     window.addEventListener('friendAccepted', (e) => {
-      console.log('[UIManager] Заявка принята:', e.detail);
       this.handleFriendAccepted(e.detail);
     });
     
     window.addEventListener('friendRejected', (e) => {
-      console.log('[UIManager] Заявка отклонена:', e.detail);
       this.handleFriendRejected(e.detail);
     });
     
     // ИСПРАВЛЕНО: Слушаем изменения localStorage для синхронизации между вкладками
     window.addEventListener('storage', (e) => {
       if (e.key === 'friendRequestsSync') {
-        // Другая вкладка обновила заявки - обновляем и мы
-        console.log('[UIManager] Получен сигнал синхронизации заявок от другой вкладки');
         this.refreshRequestsDebounced();
       }
     });

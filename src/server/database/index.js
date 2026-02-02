@@ -105,22 +105,46 @@ class Database {
 
   sendFriendRequest(senderId, receiverId, message = '') {
     const requests = JSON.parse(fs.readFileSync(this.requestsFile, 'utf8'));
+    
+    // Проверяем, уже ли есть дружба
+    const friendships = this.getFriendships();
+    const alreadyFriends = friendships.some(f => 
+      f.status === 'accepted' &&
+      ((f.user1 === senderId && f.user2 === receiverId) || (f.user1 === receiverId && f.user2 === senderId))
+    );
+    if (alreadyFriends) {
+      return { success: false, message: 'Вы уже друзья' };
+    }
+    
+    // Проверяем, есть ли уже заявка
     if (requests.some(r => r.sender === senderId && r.receiver === receiverId)) {
       return { success: false, message: 'Заявка уже отправлена' };
     }
 
-    const id = `req_${Date.now()}`;
-    requests.push({
-      id,
-      sender: senderId,
-      receiver: receiverId,
-      message,
-      status: 'pending',
-      createdAt: new Date().toISOString()
+    // ДВУСТОРОННЕЕ ДОБАВЛЕНИЕ В ДРУЗЬЯ (без подтверждения)
+    // Сразу создаём дружбу без необходимости принятия заявки
+    friendships.push({
+      id: `friend_${Date.now()}`,
+      user1: senderId,
+      user2: receiverId,
+      status: 'accepted',
+      acceptedAt: new Date().toISOString()
     });
-
-    fs.writeFileSync(this.requestsFile, JSON.stringify(requests, null, 2));
-    return { success: true, requestId: id };
+    this.saveFriendships(friendships);
+    
+    // Получаем данные о друге для возврата клиенту
+    const friend = this.getUserById(receiverId);
+    const friendData = {
+      id: `friend_${Date.now()}`,
+      friendId: receiverId,
+      friendName: friend?.name || 'Неизвестный',
+      friendEmail: friend?.email || '',
+      friendAvatarColor: friend?.avatar_color || this.getRandomColor(),
+      friendAvatar: friend?.avatar || null,
+      since: new Date().toISOString()
+    };
+    
+    return { success: true, friend: friendData, immediate: true };
   }
 
   respondToFriendRequest(requestId, userId, response) {

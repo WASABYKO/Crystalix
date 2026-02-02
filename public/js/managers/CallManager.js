@@ -42,10 +42,26 @@ class CallManager {
             this.wsManager = window.WebSocketManager;
         }
         
+        // Инициализируем строку состояния звонка
+        this.initCallStatusBar();
+        
         // Подписываемся на события WebSocket
         this.bindWebSocketEvents();
-        
-        console.log('[CallManager] Инициализирован');
+    }
+    
+    initCallStatusBar() {
+        // Ждём загрузки CallStatusBar
+        const checkStatusBar = () => {
+            if (window.CallStatusBar) {
+                // Слушаем событие завершения звонка из строки состояния
+                window.addEventListener('endCallFromStatusBar', () => {
+                    this.endCall();
+                });
+            } else {
+                setTimeout(checkStatusBar, 100);
+            }
+        };
+        setTimeout(checkStatusBar, 100);
     }
     
     bindWebSocketEvents() {
@@ -69,12 +85,9 @@ class CallManager {
             attempts++;
             if (window.WebSocketManager) {
                 this.wsManager = window.WebSocketManager;
-                console.log('[CallManager] WebSocketManager найден после', attempts, 'попыток');
                 this.bindWebSocketEvents();
             } else if (attempts < maxAttempts) {
                 setTimeout(check, 100);
-            } else {
-                console.warn('[CallManager] WebSocketManager не найден после', maxAttempts, 'попыток');
             }
         };
         setTimeout(check, 100);
@@ -93,14 +106,15 @@ class CallManager {
         window.dispatchEvent(new CustomEvent('callStateChange', {
             detail: { previousState, currentState: state }
         }));
-        
-        console.log(`[CallManager] Состояние: ${previousState} -> ${state}`);
     }
     
     updateCallUI(state) {
         const videoCallModal = document.getElementById('videoCallModal');
         const incomingCallModal = document.getElementById('incomingCallModal');
         const callStatus = document.getElementById('callStatus');
+        
+        // Обновляем строку состояния звонка
+        this.updateCallStatusBar(state);
         
         switch (state) {
             case 'INCOMING':
@@ -128,6 +142,35 @@ class CallManager {
         }
     }
     
+    // ============ УПРАВЛЕНИЕ СТРОКОЙ СОСТОЯНИЯ ЗВОНКА ============
+    
+    updateCallStatusBar(state) {
+        if (!window.CallStatusBar) return;
+        
+        const partnerName = this.callPartner?.name || 'Пользователь';
+        
+        switch (state) {
+            case 'INCOMING':
+                window.CallStatusBar.updatePartnerInfo(partnerName, false);
+                window.CallStatusBar.show();
+                break;
+            case 'CONNECTING':
+            case 'RINGING':
+                window.CallStatusBar.updatePartnerInfo(partnerName, true);
+                window.CallStatusBar.show();
+                break;
+            case 'ACTIVE':
+                window.CallStatusBar.updatePartnerInfo(partnerName, this.callPartner?.isOutgoing !== false);
+                window.CallStatusBar.show();
+                break;
+            case 'ENDING':
+            case 'FAILED':
+            case 'IDLE':
+                window.CallStatusBar.hide();
+                break;
+        }
+    }
+    
     closeAllCallModals() {
         const videoCallModal = document.getElementById('videoCallModal');
         const incomingCallModal = document.getElementById('incomingCallModal');
@@ -149,7 +192,6 @@ class CallManager {
     
     async startCall(userId, isVideo = false) {
         if (this.callState !== 'IDLE') {
-            console.warn('[CallManager] Уже есть активный звонок');
             return;
         }
         
@@ -182,10 +224,7 @@ class CallManager {
             // Запускаем таймер ожидания
             this.startCallTimeout();
             
-            console.log('[CallManager] Звонок инициирован');
-            
         } catch (error) {
-            console.error('[CallManager] Ошибка начала звонка:', error);
             this.handleCallError(error);
         }
     }
@@ -206,7 +245,6 @@ class CallManager {
         try {
             return await navigator.mediaDevices.getUserMedia(constraints);
         } catch (error) {
-            console.error('[CallManager] Ошибка доступа к медиа:', error);
             throw error;
         }
     }
@@ -229,8 +267,6 @@ class CallManager {
         
         // Обработка изменений состояния соединения
         this.peerConnection.onconnectionstatechange = () => {
-            console.log('[CallManager] Состояние соединения:', this.peerConnection.connectionState);
-            
             if (this.peerConnection.connectionState === 'disconnected' ||
                 this.peerConnection.connectionState === 'failed') {
                 this.handleConnectionLost();
@@ -239,17 +275,16 @@ class CallManager {
         
         // Обработка ICE состояния
         this.peerConnection.oniceconnectionstatechange = () => {
-            console.log('[CallManager] ICE состояние:', this.peerConnection.iceConnectionState);
+            // ICE состояние изменено
         };
         
         // Применяем буферизованные ICE кандидаты
         if (this.queuedIceCandidates.length > 0) {
-            console.log('[CallManager] Применяем буферизованные ICE кандидаты:', this.queuedIceCandidates.length);
             this.queuedIceCandidates.forEach(async (candidate) => {
                 try {
                     await this.peerConnection.addIceCandidate(candidate);
                 } catch (error) {
-                    console.error('[CallManager] Ошибка добавления буферизованного кандидата:', error);
+                    // Игнорируем ошибку
                 }
             });
             this.queuedIceCandidates = [];
@@ -268,7 +303,7 @@ class CallManager {
         this.currentCallId = data.callId;
         this.callPartner = { id: data.from, name: data.fromName };
         this.isVideo = data.isVideo;
-        this.pendingOffer = data.offer; // Сохраняем оффер
+        this.pendingOffer = data.offer;
         
         // Показываем уведомление о входящем звонке
         this.showIncomingCallNotification(data);
@@ -278,8 +313,6 @@ class CallManager {
         
         // Запускаем вибрацию на мобильных
         this.vibrateDevice();
-        
-        console.log('[CallManager] Входящий звонок от:', data.from);
     }
     
     showIncomingCallNotification(data) {
@@ -391,10 +424,7 @@ class CallManager {
             await this.peerConnection.setLocalDescription(answer);
             this.sendCallAnswer(answer);
             
-            console.log('[CallManager] Звонок принят, ответ отправлен');
-            
         } catch (error) {
-            console.error('[CallManager] Ошибка принятия звонка:', error);
             this.rejectCall();
         }
     }
@@ -412,8 +442,6 @@ class CallManager {
         
         // Сбрасываем состояние
         this.setCallState('IDLE');
-        
-        console.log('[CallManager] Звонок отклонён');
     }
     
     async rejectWithMessage() {
@@ -427,7 +455,6 @@ class CallManager {
         
         // Если peerConnection ещё не создан, пропускаем
         if (!this.peerConnection) {
-            console.warn('[CallManager] Ответ получен, но peerConnection ещё не создан');
             return;
         }
         
@@ -437,10 +464,8 @@ class CallManager {
             this.setCallState('ACTIVE');
             this.startCallTimer();
             
-            console.log('[CallManager] Ответ получен, звонок активен');
-            
         } catch (error) {
-            console.error('[CallManager] Ошибка обработки ответа:', error);
+            // Игнорируем ошибку
         }
     }
     
@@ -449,16 +474,14 @@ class CallManager {
         
         // Если peerConnection ещё не создан, буферизируем кандидата
         if (!this.peerConnection) {
-            console.log('[CallManager] ICE кандидат сохранён в буфер (peerConnection не создан)');
             this.queuedIceCandidates.push(data.candidate);
             return;
         }
         
         try {
             await this.peerConnection.addIceCandidate(data.candidate);
-            console.log('[CallManager] ICE кандидат добавлен');
         } catch (error) {
-            console.error('[CallManager] Ошибка добавления ICE кандидата:', error);
+            // Игнорируем ошибку
         }
     }
     
