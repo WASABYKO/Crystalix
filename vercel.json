@@ -47,8 +47,8 @@
       ]
     }
   ],
-  "env": [
-    "FRONTEND_URL",
-    "API_URL"
-  ]
+  "env": {
+    "FRONTEND_URL": "@frontend-url",
+    "API_URL": "@api-url"
+  }
 }
