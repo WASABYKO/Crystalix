@@ -735,6 +735,9 @@ class UIManager {
       resetCallBtn.addEventListener('click', () => this.handleResetCall());
     }
     
+    // Привязываем premium события
+    this.bindPremiumEvents();
+    
     console.log('[UIManager] События привязаны');
   }
   
@@ -2242,6 +2245,841 @@ class UIManager {
       this.showToast('Ошибка отправки запроса', 'error');
     }
   }
+  
+  // ============ ПРАВАЯ ПАНЕЛЬ: КНОПКИ ============
+  
+  // Поиск в чате
+  toggleChatSearch() {
+    const searchBar = document.getElementById('chatHeaderSearch');
+    if (!searchBar) return;
+    
+    const isActive = searchBar.classList.contains('active');
+    
+    if (isActive) {
+      searchBar.classList.remove('active');
+      this.exitSearchInChat();
+    } else {
+      searchBar.classList.add('active');
+      document.getElementById('chatSearchInput')?.focus();
+      this.enterSearchInChat();
+    }
+  }
+  
+  enterSearchInChat() {
+    const messagesArea = document.getElementById('messagesArea');
+    if (messagesArea) messagesArea.classList.add('searching');
+  }
+  
+  exitSearchInChat() {
+    const messagesArea = document.getElementById('messagesArea');
+    const searchInput = document.getElementById('chatSearchInput');
+    
+    if (messagesArea) messagesArea.classList.remove('searching');
+    if (searchInput) searchInput.value = '';
+    
+    document.querySelectorAll('.message.highlighted').forEach(el => el.classList.remove('highlighted'));
+  }
+  
+  searchInChat(query) {
+    if (!query.trim()) {
+      document.querySelectorAll('.message').forEach(el => el.classList.remove('hidden'));
+      return;
+    }
+    
+    const messages = document.querySelectorAll('.message');
+    const lowerQuery = query.toLowerCase();
+    
+    messages.forEach(msg => {
+      const textEl = msg.querySelector('.message-bubble');
+      if (textEl) {
+        const text = textEl.textContent.toLowerCase();
+        if (text.includes(lowerQuery)) {
+          msg.classList.remove('hidden');
+          msg.classList.add('highlighted');
+        } else {
+          msg.classList.add('hidden');
+          msg.classList.remove('highlighted');
+        }
+      }
+    });
+  }
+  
+  // Закрепить чат
+  togglePinChat() {
+    if (!this.activeChatId) return;
+    
+    const btn = document.getElementById('pinChatBtn');
+    const chatItem = document.querySelector(`.chat-item[data-chat-id="${this.activeChatId}"]`);
+    
+    if (!btn || !chatItem) return;
+    
+    const isPinned = chatItem.classList.contains('pinned');
+    
+    chatItem.classList.toggle('pinned');
+    
+    if (isPinned) {
+      btn.innerHTML = '<i class="fas fa-thumbtack"></i> Закрепить чат';
+      btn.classList.remove('active');
+      this.showToast('Чат откреплён', 'info');
+    } else {
+      btn.innerHTML = '<i class="fas fa-thumbtack"></i> Открепить чат';
+      btn.classList.add('active');
+      this.showToast('Чат закреплён', 'success');
+      
+      const chatsList = document.getElementById('chatsList');
+      if (chatsList && chatsList.firstChild) {
+        chatsList.insertBefore(chatItem, chatsList.firstChild);
+      }
+    }
+    
+    this.savePinnedChats();
+  }
+  
+  savePinnedChats() {
+    const pinnedChats = [];
+    document.querySelectorAll('.chat-item.pinned').forEach(item => {
+      pinnedChats.push(item.dataset.chatId);
+    });
+    localStorage.setItem('pinnedChats', JSON.stringify(pinnedChats));
+  }
+  
+  loadPinnedChats() {
+    const pinned = JSON.parse(localStorage.getItem('pinnedChats') || '[]');
+    pinned.forEach(chatId => {
+      const item = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
+      if (item) {
+        item.classList.add('pinned');
+        if (chatId === this.activeChatId) {
+          const btn = document.getElementById('pinChatBtn');
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-thumbtack"></i> Открепить чат';
+            btn.classList.add('active');
+          }
+        }
+      }
+    });
+  }
+  
+  // Без звука
+  toggleMuteChat(duration = null) {
+    if (!this.activeChatId) return;
+    
+    const btn = document.getElementById('muteChatBtn');
+    const chatItem = document.querySelector(`.chat-item[data-chat-id="${this.activeChatId}"]`);
+    
+    if (!btn || !chatItem) return;
+    
+    const isMuted = chatItem.classList.contains('muted');
+    
+    if (duration) {
+      chatItem.classList.add('muted');
+      btn.innerHTML = '<i class="fas fa-bell"></i> Включить звук';
+      btn.classList.add('active');
+      
+      const muteUntil = duration === 'forever' ? 'forever' : Date.now() + this.parseDuration(duration);
+      localStorage.setItem(`mute_${this.activeChatId}`, muteUntil);
+      
+      const durationText = duration === 'forever' ? 'навсегда' : this.formatMuteTime(duration);
+      this.showToast(`Уведомления отключены ${durationText}`, 'info');
+      return;
+    }
+    
+    chatItem.classList.toggle('muted');
+    
+    if (isMuted) {
+      btn.innerHTML = '<i class="fas fa-bell-slash"></i> Без звука';
+      btn.classList.remove('active');
+      localStorage.removeItem(`mute_${this.activeChatId}`);
+      this.showToast('Звук включён', 'success');
+    } else {
+      btn.innerHTML = '<i class="fas fa-bell"></i> Включить звук';
+      btn.classList.add('active');
+      localStorage.setItem(`mute_${this.activeChatId}`, Date.now() + 3600000);
+      this.showToast('Уведомления отключены на 1 час', 'info');
+    }
+  }
+  
+  parseDuration(duration) {
+    const durations = { '1h': 3600000, '8h': 28800000, '24h': 86400000 };
+    return durations[duration] || 3600000;
+  }
+  
+  formatMuteTime(duration) {
+    const times = { '1h': 'на 1 час', '8h': 'на 8 часов', '24h': 'на 24 часа', 'forever': 'навсегда' };
+    return times[duration] || '';
+  }
+  
+  loadMutedChats() {
+    document.querySelectorAll('.chat-item').forEach(item => {
+      const chatId = item.dataset.chatId;
+      const muteUntil = localStorage.getItem(`mute_${chatId}`);
+      
+      if (muteUntil) {
+        if (muteUntil === 'forever' || parseInt(muteUntil) > Date.now()) {
+          item.classList.add('muted');
+        } else {
+          item.classList.remove('muted');
+          localStorage.removeItem(`mute_${chatId}`);
+        }
+      }
+    });
+  }
+  
+  showMuteTooltip(btn) {
+    const tooltip = document.getElementById('muteTooltip');
+    if (!tooltip) return;
+    
+    const rect = btn.getBoundingClientRect();
+    tooltip.style.left = `${rect.left}px`;
+    tooltip.style.top = `${rect.bottom + 8}px`;
+    tooltip.style.display = 'block';
+    
+    tooltip.querySelectorAll('.mute-option').forEach(opt => {
+      opt.onclick = () => {
+        this.toggleMuteChat(opt.dataset.duration);
+        tooltip.style.display = 'none';
+      };
+    });
+  }
+  
+  hideMuteTooltip() {
+    const tooltip = document.getElementById('muteTooltip');
+    if (tooltip) tooltip.style.display = 'none';
+  }
+  
+  // Очистить историю
+  showClearChatConfirm() {
+    const modal = document.getElementById('confirmClearChatModal');
+    if (modal) modal.classList.add('active');
+  }
+  
+  async clearChatHistory() {
+    if (!this.activeChatId) return;
+    
+    const messagesList = document.getElementById('messagesList');
+    
+    if (messagesList) {
+      const messages = messagesList.querySelectorAll('.message');
+      messages.forEach((msg, index) => {
+        setTimeout(() => {
+          msg.style.opacity = '0';
+          msg.style.transform = 'translateX(-20px)';
+          setTimeout(() => msg.remove(), 300);
+        }, index * 50);
+      });
+    }
+    
+    const modal = document.getElementById('confirmClearChatModal');
+    if (modal) modal.classList.remove('active');
+    
+    setTimeout(() => {
+      this.messages[this.activeChatId] = [];
+      if (messagesList) {
+        messagesList.innerHTML = `<div class="empty-state-small"><i class="fas fa-comment-alt"></i><p>История очищена</p><p class="text-muted">Новых сообщений пока нет</p></div>`;
+      }
+      this.showToast('История чата очищена', 'success');
+    }, messagesList?.querySelectorAll('.message').length * 50 + 300 || 500);
+  }
+  
+  // Показать все медиа
+  openMediaGallery() {
+    const modal = document.getElementById('mediaGalleryModal');
+    const grid = document.getElementById('mediaGalleryGrid');
+    
+    if (!modal || !grid || !this.activeChatId) return;
+    
+    const messages = this.messages[this.activeChatId] || [];
+    const mediaMessages = messages.filter(m => m.type === 'image' || m.type === 'video' || m.type === 'file');
+    
+    if (mediaMessages.length === 0) {
+      grid.innerHTML = `<div class="empty-state-small" style="grid-column: 1/-1;"><i class="fas fa-image"></i><p>Медиафайлы не найдены</p></div>`;
+    } else {
+      grid.innerHTML = mediaMessages.map(m => `<div class="media-gallery-item" role="listitem"><img src="${m.content}" alt="Медиа" loading="lazy"></div>`).join('');
+    }
+    
+    modal.classList.add('active');
+  }
+  
+  // ============ ХЕДЕР ЧАТА: КНОПКИ ============
+  
+  toggleRightPanel() {
+    const rightPanel = document.getElementById('rightPanel');
+    const btn = document.getElementById('chatInfoBtn');
+    
+    if (!rightPanel) return;
+    
+    const isActive = rightPanel.classList.contains('active');
+    
+    if (isActive) {
+      rightPanel.classList.remove('active');
+      btn?.classList.remove('active');
+    } else {
+      rightPanel.classList.add('active');
+      btn?.classList.add('active');
+    }
+  }
+  
+  toggleChatSettings() {
+    const dropdown = document.getElementById('chatSettingsDropdown');
+    if (!dropdown) return;
+    
+    const isActive = dropdown.classList.contains('active');
+    
+    if (isActive) {
+      dropdown.classList.remove('active');
+    } else {
+      document.querySelectorAll('.dropdown-menu.active').forEach(d => d.classList.remove('active'));
+      dropdown.classList.add('active');
+    }
+  }
+  
+  handleChatSettingsAction(action) {
+    const dropdown = document.getElementById('chatSettingsDropdown');
+    if (dropdown) dropdown.classList.remove('active');
+    
+    switch (action) {
+      case 'rename': this.renameChat(); break;
+      case 'add-member': this.showToast('Добавление участников скоро будет доступно', 'info'); break;
+      case 'export': this.exportChatHistory(); break;
+      case 'leave': this.leaveChat(); break;
+    }
+  }
+  
+  renameChat() {
+    const chatTitle = document.getElementById('chatTitle');
+    if (!chatTitle) return;
+    
+    const newName = prompt('Введите новое название чата:', chatTitle.textContent);
+    if (newName && newName.trim()) {
+      chatTitle.textContent = newName.trim();
+      this.showToast('Чат переименован', 'success');
+    }
+  }
+  
+  exportChatHistory() {
+    if (!this.activeChatId) return;
+    
+    const messages = this.messages[this.activeChatId] || [];
+    const exportData = { chatId: this.activeChatId, exportedAt: new Date().toISOString(), messages };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chat-history-${this.activeChatId}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    this.showToast('История экспортирована', 'success');
+  }
+  
+  leaveChat() {
+    if (!this.activeChatId) return;
+    
+    if (confirm('Вы уверены, что хотите покинуть этот чат?')) {
+      this.showToast('Вы покинули чат', 'info');
+      this.activeChatId = null;
+      this.closeChat();
+    }
+  }
+  
+  closeChat() {
+    const emptyState = document.getElementById('emptyState');
+    const messagesList = document.getElementById('messagesList');
+    
+    if (emptyState) emptyState.style.display = 'flex';
+    if (messagesList) messagesList.style.display = 'none';
+    
+    ['videoCallBtn', 'voiceCallBtn', 'chatInfoBtn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.disabled = true;
+    });
+    
+    const rightPanel = document.getElementById('rightPanel');
+    if (rightPanel) rightPanel.classList.remove('active');
+    
+    document.querySelectorAll('.chat-item.active').forEach(item => item.classList.remove('active'));
+  }
+  
+  // ============ ОБЛАСТЬ ВВОДА: КНОПКИ ============
+  
+  toggleEmojiPicker() {
+    const picker = document.getElementById('emojiPicker');
+    if (!picker) return;
+    
+    const isActive = picker.classList.contains('active');
+    
+    if (isActive) {
+      picker.classList.remove('active');
+    } else {
+      document.querySelectorAll('.attach-menu.active, .dropdown-menu.active').forEach(m => m.classList.remove('active'));
+      picker.classList.add('active');
+    }
+  }
+  
+  insertEmoji(emoji) {
+    const input = document.getElementById('messageInput');
+    if (!input) return;
+    
+    input.value += emoji;
+    input.focus();
+    
+    const picker = document.getElementById('emojiPicker');
+    if (picker) picker.classList.remove('active');
+  }
+  
+  toggleAttachMenu() {
+    const menu = document.getElementById('attachMenu');
+    if (!menu) return;
+    
+    const isActive = menu.classList.contains('active');
+    
+    if (isActive) {
+      menu.classList.remove('active');
+    } else {
+      document.querySelectorAll('.emoji-picker.active, .dropdown-menu.active').forEach(m => m.classList.remove('active'));
+      menu.classList.add('active');
+    }
+  }
+  
+  handleAttach(type) {
+    const menu = document.getElementById('attachMenu');
+    if (menu) menu.classList.remove('active');
+    
+    switch (type) {
+      case 'photo': this.openFilePicker('image/*'); break;
+      case 'file': this.openFilePicker('*'); break;
+      case 'contact': this.showToast('Отправка контакта скоро будет доступна', 'info'); break;
+      case 'location': this.showToast('Отправка местоположения скоро будет доступна', 'info'); break;
+    }
+  }
+  
+  openFilePicker(accept) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = accept;
+    input.style.display = 'none';
+    
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) this.showToast(`Файл выбран: ${file.name}`, 'success');
+    };
+    
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+  }
+  
+  // Голосовые сообщения
+  startVoiceRecording() {
+    const overlay = document.getElementById('voiceRecordingOverlay');
+    if (!overlay) return;
+    
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.showToast('Голосовые сообщения не поддерживаются', 'error');
+      return;
+    }
+    
+    overlay.classList.add('active');
+    this.voiceRecordingStartTime = Date.now();
+    this.voiceRecordingTimer = setInterval(() => this.updateVoiceTimer(), 1000);
+  }
+  
+  stopVoiceRecording(cancel = false) {
+    const overlay = document.getElementById('voiceRecordingOverlay');
+    if (!overlay) return;
+    
+    overlay.classList.remove('active');
+    
+    if (this.voiceRecordingTimer) {
+      clearInterval(this.voiceRecordingTimer);
+    }
+    
+    if (!cancel) {
+      const duration = Math.floor((Date.now() - this.voiceRecordingStartTime) / 1000);
+      if (duration > 1) {
+        this.showToast(`Голосовое сообщение (${duration} сек.) отправлено`, 'success');
+      }
+    }
+    
+    this.voiceRecordingStartTime = null;
+  }
+  
+  updateVoiceTimer() {
+    const timer = document.getElementById('voiceTimer');
+    if (!timer || !this.voiceRecordingStartTime) return;
+    
+    const seconds = Math.floor((Date.now() - this.voiceRecordingStartTime) / 1000);
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = (seconds % 60).toString().padStart(2, '0');
+    timer.textContent = `${mins}:${secs}`;
+  }
+  
+  // ============ ИНТЕРАКТИВНЫЕ СООБЩЕНИЯ ============
+  
+  showContextMenu(messageEl, messageId) {
+    const menu = document.getElementById('messageContextMenu');
+    if (!menu) return;
+    
+    this.selectedMessageId = messageId;
+    
+    const rect = messageEl.getBoundingClientRect();
+    menu.style.left = `${rect.right + 8}px`;
+    menu.style.top = `${rect.top}px`;
+    menu.classList.add('active');
+  }
+  
+  hideContextMenu() {
+    const menu = document.getElementById('messageContextMenu');
+    if (menu) {
+      menu.classList.remove('active');
+      this.selectedMessageId = null;
+    }
+  }
+  
+  handleContextMenuAction(action) {
+    const messageId = this.selectedMessageId;
+    
+    this.hideContextMenu();
+    
+    if (!messageId) return;
+    
+    switch (action) {
+      case 'reply': this.showToast('Режим ответа', 'info'); break;
+      case 'forward': this.showToast('Пересылка сообщения', 'info'); break;
+      case 'copy': this.copyMessage(messageId); break;
+      case 'delete': this.deleteMessage(messageId); break;
+    }
+  }
+  
+  copyMessage(messageId) {
+    const message = document.querySelector(`.message[data-message-id="${messageId}"]`);
+    const bubble = message?.querySelector('.message-bubble');
+    
+    if (bubble) {
+      navigator.clipboard.writeText(bubble.textContent).then(() => {
+        this.showToast('Текст скопирован', 'success');
+      }).catch(() => {
+        this.showToast('Не удалось скопировать', 'error');
+      });
+    }
+  }
+  
+  deleteMessage(messageId) {
+    const message = document.querySelector(`.message[data-message-id="${messageId}"]`);
+    if (!message) return;
+    
+    message.style.opacity = '0';
+    message.style.transform = 'translateX(-20px)';
+    
+    setTimeout(() => {
+      message.remove();
+      this.showToast('Сообщение удалено', 'info');
+    }, 300);
+  }
+  
+  showReactionsBubble(messageEl) {
+    const bubble = document.getElementById('reactionsBubble');
+    if (!bubble) return;
+    
+    const rect = messageEl.getBoundingClientRect();
+    bubble.style.left = `${rect.left + rect.width / 2}px`;
+    bubble.style.top = `${rect.top}px`;
+    bubble.classList.add('active');
+    
+    this.selectedMessageId = messageEl.dataset.messageId;
+  }
+  
+  hideReactionsBubble() {
+    const bubble = document.getElementById('reactionsBubble');
+    if (bubble) bubble.classList.remove('active');
+  }
+  
+  addReaction(messageId, reaction) {
+    const message = document.querySelector(`.message[data-message-id="${messageId}"]`);
+    if (!message) return;
+    
+    let reactionsContainer = message.querySelector('.message-reactions');
+    
+    if (!reactionsContainer) {
+      reactionsContainer = document.createElement('div');
+      reactionsContainer.className = 'message-reactions';
+      message.querySelector('.message-content').appendChild(reactionsContainer);
+    }
+    
+    const existingReaction = reactionsContainer.querySelector(`[data-reaction="${reaction}"]`);
+    
+    if (existingReaction) {
+      const count = existingReaction.querySelector('.reaction-count');
+      if (count) {
+        count.textContent = parseInt(count.textContent) + 1;
+      } else {
+        existingReaction.innerHTML = `${reaction}<span class="reaction-count">1</span>`;
+      }
+      existingReaction.classList.add('active');
+    } else {
+      reactionsContainer.innerHTML += `<div class="reaction active" data-reaction="${reaction}">${reaction}<span class="reaction-count">1</span></div>`;
+    }
+    
+    this.hideReactionsBubble();
+    this.showToast(`Реакция ${reaction} добавлена`, 'success');
+  }
+  
+  initMessageInteractions() {
+    let longPressTimer = null;
+    let pressStartTime = 0;
+    
+    document.addEventListener('mousedown', (e) => {
+      const message = e.target.closest('.message');
+      if (message) {
+        pressStartTime = Date.now();
+        longPressTimer = setTimeout(() => {
+          const duration = Date.now() - pressStartTime;
+          if (duration >= 500) {
+            this.showContextMenu(message, message.dataset.messageId);
+          }
+        }, 500);
+      }
+    });
+    
+    document.addEventListener('mouseup', () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+    });
+    
+    document.addEventListener('click', (e) => {
+      const message = e.target.closest('.message');
+      
+      const contextMenu = document.getElementById('messageContextMenu');
+      if (contextMenu && !e.target.closest('.message-context-menu')) {
+        this.hideContextMenu();
+      }
+      
+      const reactionsBubble = document.getElementById('reactionsBubble');
+      if (reactionsBubble && !e.target.closest('.reactions-bubble') && !e.target.closest('.reaction')) {
+        this.hideReactionsBubble();
+      }
+    });
+  }
+  
+  // ============ TOAST УВЕДОМЛЕНИЯ ============
+  
+  showToast(message, type = 'info', avatar = null, title = '') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    
+    const iconClass = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' }[type] || 'fa-info-circle';
+    
+    toast.innerHTML = `
+      <button class="toast-close"><i class="fas fa-times"></i></button>
+      ${avatar ? `<div class="toast-avatar" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">${avatar}</div>` : ''}
+      <div class="toast-content">
+        ${title ? `<div class="toast-title">${title}</div>` : ''}
+        <div class="toast-message">${message}</div>
+      </div>
+    `;
+    
+    container.appendChild(toast);
+    
+    toast.querySelector('.toast-close').onclick = () => {
+      toast.classList.add('hiding');
+      setTimeout(() => toast.remove(), 300);
+    };
+    
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 300);
+      }
+    }, 4000);
+  }
+  
+  // ============ СИСТЕМНЫЕ СООБЩЕНИЯ ============
+  
+  showSystemMessage(text) {
+    const messagesArea = document.getElementById('messagesList');
+    if (!messagesArea) return;
+    
+    const messageEl = document.createElement('div');
+    messageEl.className = 'system-message';
+    messageEl.innerHTML = `<div class="system-message-content"><i class="fas fa-info-circle"></i> ${text}</div>`;
+    
+    messagesArea.appendChild(messageEl);
+    this.scrollToBottom();
+  }
+  
+  // ============ SKELETON LOADING ============
+  
+  showSkeletonLoading(container, count = 3) {
+    const template = document.getElementById('skeletonTemplate');
+    if (!template) return;
+    
+    container.innerHTML = '';
+    
+    for (let i = 0; i < count; i++) {
+      const clone = template.content.cloneNode(true);
+      container.appendChild(clone);
+    }
+  }
+  
+  hideSkeletonLoading(container) {
+    container.querySelectorAll('.skeleton').forEach(el => el.remove());
+  }
+  
+  // ============ LAZY LOADING ============
+  
+  initLazyLoading() {
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+              img.removeAttribute('data-src');
+            }
+            observer.unobserve(img);
+          }
+        });
+      });
+      
+      document.querySelectorAll('img[loading="lazy"]').forEach(img => observer.observe(img));
+    }
+  }
+  
+  // ============ PULL TO REFRESH ============
+  
+  initPullToRefresh() {
+    const container = document.getElementById('requestsTab');
+    if (!container) return;
+    
+    let startY = 0;
+    let isRefreshing = false;
+    
+    container.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; });
+    
+    container.addEventListener('touchmove', (e) => {
+      if (isRefreshing) return;
+      
+      const currentY = e.touches[0].clientY;
+      if (currentY - startY > 100 && container.scrollTop === 0) {
+        isRefreshing = true;
+        this.refreshRequests();
+        
+        setTimeout(() => { isRefreshing = false; }, 1000);
+      }
+    });
+  }
+  
+  // ============ ПРИВЯЗКА PREMIUM СОБЫТИЙ ============
+  
+  bindPremiumEvents() {
+    // Кнопки правой панели
+    document.getElementById('searchInChatBtn')?.addEventListener('click', () => this.toggleChatSearch());
+    document.getElementById('pinChatBtn')?.addEventListener('click', () => this.togglePinChat());
+    document.getElementById('muteChatBtn')?.addEventListener('click', (e) => {
+      if (e.shiftKey) {
+        this.showMuteTooltip(e.target.closest('#muteChatBtn'));
+      } else {
+        this.toggleMuteChat();
+      }
+    });
+    document.getElementById('clearChatBtn')?.addEventListener('click', () => this.showClearChatConfirm());
+    document.getElementById('viewAllMediaBtn')?.addEventListener('click', () => this.openMediaGallery());
+    
+    // Кнопки хедера
+    document.getElementById('chatInfoBtn')?.addEventListener('click', () => this.toggleRightPanel());
+    document.getElementById('chatSettingsBtn')?.addEventListener('click', () => this.toggleChatSettings());
+    
+    // Кнопки ввода
+    document.getElementById('emojiBtn')?.addEventListener('click', () => this.toggleEmojiPicker());
+    document.getElementById('attachBtn')?.addEventListener('click', () => this.toggleAttachMenu());
+    document.getElementById('voiceBtn')?.addEventListener('mousedown', () => this.startVoiceRecording());
+    document.getElementById('voiceBtn')?.addEventListener('mouseup', () => this.stopVoiceRecording());
+    document.getElementById('voiceBtn')?.addEventListener('mouseleave', () => this.stopVoiceRecording());
+    document.getElementById('voiceBtn')?.addEventListener('touchstart', (e) => { e.preventDefault(); this.startVoiceRecording(); });
+    document.getElementById('voiceBtn')?.addEventListener('touchend', (e) => { e.preventDefault(); this.stopVoiceRecording(); });
+    
+    // Emoji picker
+    document.querySelectorAll('.emoji-item').forEach(item => {
+      item.addEventListener('click', () => this.insertEmoji(item.textContent));
+    });
+    
+    // Attach menu
+    document.querySelectorAll('.attach-menu-item').forEach(item => {
+      item.addEventListener('click', () => this.handleAttach(item.dataset.type));
+    });
+    
+    // Chat settings dropdown
+    document.querySelectorAll('#chatSettingsDropdown .dropdown-item').forEach(item => {
+      item.addEventListener('click', () => this.handleChatSettingsAction(item.dataset.action));
+    });
+    
+    // Message context menu
+    document.querySelectorAll('#messageContextMenu .context-menu-item').forEach(item => {
+      item.addEventListener('click', () => this.handleContextMenuAction(item.dataset.action));
+    });
+    
+    // Reactions bubble
+    document.querySelectorAll('.reaction-emoji').forEach(item => {
+      item.addEventListener('click', () => {
+        if (this.selectedMessageId) {
+          this.addReaction(this.selectedMessageId, item.dataset.reaction);
+        }
+      });
+    });
+    
+    // Voice recording buttons
+    document.getElementById('voiceCancelBtn')?.addEventListener('click', () => this.stopVoiceRecording(true));
+    document.getElementById('voiceSendBtn')?.addEventListener('click', () => this.stopVoiceRecording(false));
+    
+    // Confirm clear chat
+    document.getElementById('cancelClearChatBtn')?.addEventListener('click', () => {
+      document.getElementById('confirmClearChatModal')?.classList.remove('active');
+    });
+    document.getElementById('confirmClearChatBtn')?.addEventListener('click', () => this.clearChatHistory());
+    
+    // Search in chat
+    document.getElementById('chatSearchInput')?.addEventListener('input', (e) => this.searchInChat(e.target.value));
+    document.getElementById('closeChatSearchBtn')?.addEventListener('click', () => this.toggleChatSearch());
+    
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.dropdown-menu') && !e.target.closest('#chatSettingsBtn')) {
+        document.getElementById('chatSettingsDropdown')?.classList.remove('active');
+      }
+      if (!e.target.closest('.emoji-picker') && !e.target.closest('#emojiBtn')) {
+        document.getElementById('emojiPicker')?.classList.remove('active');
+      }
+      if (!e.target.closest('.attach-menu') && !e.target.closest('#attachBtn')) {
+        document.getElementById('attachMenu')?.classList.remove('active');
+      }
+    });
+    
+    // Инициализируем взаимодействия с сообщениями
+    this.initMessageInteractions();
+    
+    // Загружаем закрепленные и заглушенные чаты
+    this.loadPinnedChats();
+    this.loadMutedChats();
+    
+    // Инициализируем pull-to-refresh
+    this.initPullToRefresh();
+    
+    // Инициализируем lazy loading
+    this.initLazyLoading();
+    
+    // Инициализируем Emoji Picker
+    this.emojiPicker = new EmojiPicker();
+    
+    // Инициализируем File Uploader
+    this.fileUploader = new FileUploader();
+  }
 }
 
 // ============ ГЛАВНОЕ ПРИЛОЖЕНИЕ ============
@@ -2392,6 +3230,300 @@ class MessengerApp {
     } catch (e) {
       console.log('[MessengerApp] Аудио не поддерживается');
     }
+  }
+}
+
+/**
+ * Emoji Picker - Выбор эмодзи
+ */
+class EmojiPicker {
+  constructor() {
+    this.emojiBtn = document.getElementById('emojiBtn');
+    this.emojiPicker = document.getElementById('emojiPicker');
+    this.emojiGrid = document.getElementById('emojiGrid');
+    this.messageInput = document.getElementById('messageInput');
+    this.emojiSearch = document.getElementById('emojiSearch');
+    
+    this.init();
+  }
+  
+  init() {
+    // Загружаем список популярных эмодзи
+    this.popularEmojis = [
+      '😀', '😂', '🥰', '😎', '🤔', '👍', '❤️', '🔥', '✨', '🎉',
+      '💯', '👏', '🙏', '🤝', '💪', '🧠', '💖', '🌟', '🍕', '☕',
+      '🎮', '📚', '💼', '🎵', '🌈', '😢', '😡', '😴', '🤒', '🥳',
+      '🎂', '🎁', '✈️', '🚗', '🏠', '💻', '📱', '📸', '💾', '💿'
+    ];
+    
+    // Наполняем сетку эмодзи
+    this.renderEmojis();
+    
+    // Обработчики событий
+    if (this.emojiBtn) {
+      this.emojiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.togglePicker();
+      });
+    }
+    
+    // Закрытие при клике вне пикера
+    document.addEventListener('click', (e) => {
+      if (this.emojiPicker && !this.emojiPicker.contains(e.target) && 
+          (!this.emojiBtn || !this.emojiBtn.contains(e.target))) {
+        this.hidePicker();
+      }
+    });
+    
+    // Поиск эмодзи
+    if (this.emojiSearch) {
+      this.emojiSearch.addEventListener('input', (e) => {
+        this.filterEmojis(e.target.value);
+      });
+    }
+  }
+  
+  renderEmojis(emojis = this.popularEmojis) {
+    if (!this.emojiGrid) return;
+    
+    this.emojiGrid.innerHTML = '';
+    emojis.forEach(emoji => {
+      const button = document.createElement('button');
+      button.className = 'emoji-item';
+      button.textContent = emoji;
+      button.setAttribute('aria-label', `Эмодзи ${emoji}`);
+      button.addEventListener('click', () => this.insertEmoji(emoji));
+      this.emojiGrid.appendChild(button);
+    });
+  }
+  
+  filterEmojis(searchTerm) {
+    if (!searchTerm) {
+      this.renderEmojis();
+      return;
+    }
+    
+    // Простой фильтр - ищем совпадение в названии эмодзи
+    const filtered = this.popularEmojis.filter(emoji => true); // Для простоты показываем все
+    this.renderEmojis(this.popularEmojis);
+  }
+  
+  togglePicker() {
+    if (!this.emojiPicker) return;
+    
+    this.emojiPicker.classList.toggle('active');
+    if (this.emojiPicker.classList.contains('active')) {
+      // Позиционируем над кнопкой
+      const rect = this.emojiBtn.getBoundingClientRect();
+      this.emojiPicker.style.bottom = `${window.innerHeight - rect.top + 10}px`;
+      this.emojiPicker.style.left = `${rect.left}px`;
+    }
+  }
+  
+  hidePicker() {
+    if (this.emojiPicker) {
+      this.emojiPicker.classList.remove('active');
+    }
+  }
+  
+  insertEmoji(emoji) {
+    if (!this.messageInput) return;
+    
+    const start = this.messageInput.selectionStart;
+    const end = this.messageInput.selectionEnd;
+    const text = this.messageInput.value;
+    
+    this.messageInput.value = text.substring(0, start) + emoji + text.substring(end);
+    this.messageInput.focus();
+    this.messageInput.selectionStart = this.messageInput.selectionEnd = start + emoji.length;
+    
+    // Скрываем пикер после вставки
+    this.hidePicker();
+  }
+}
+
+/**
+ * File Uploader - Загрузка файлов
+ */
+class FileUploader {
+  constructor() {
+    this.fileInput = document.getElementById('fileInput');
+    this.attachBtn = document.getElementById('attachBtn');
+    this.dropZone = document.getElementById('dropZone');
+    this.dropOverlay = document.getElementById('dropOverlay');
+    this.messageInput = document.getElementById('messageInput');
+    this.sendMessageBtn = document.getElementById('sendMessageBtn');
+    
+    this.pendingFiles = [];
+    this.init();
+  }
+  
+  init() {
+    if (!this.fileInput || !this.attachBtn) return;
+    
+    // Открытие файлового диалога
+    this.attachBtn.addEventListener('click', () => this.fileInput.click());
+    
+    // Обработка выбора файлов
+    this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
+    
+    // Drag & Drop
+    if (this.dropZone) {
+      this.dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (this.dropOverlay) this.dropOverlay.style.display = 'flex';
+      });
+      
+      this.dropZone.addEventListener('dragleave', () => {
+        if (this.dropOverlay) this.dropOverlay.style.display = 'none';
+      });
+      
+      this.dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (this.dropOverlay) this.dropOverlay.style.display = 'none';
+        this.handleFiles(e.dataTransfer.files);
+      });
+    }
+  }
+  
+  handleFiles(files) {
+    if (!files || files.length === 0) return;
+    
+    // Ограничиваем количество файлов
+    const maxFiles = 10;
+    const filesToProcess = Array.from(files).slice(0, maxFiles);
+    
+    filesToProcess.forEach(file => {
+      if (this.isImageFile(file)) {
+        this.previewImage(file);
+      } else {
+        this.previewFile(file);
+      }
+    });
+    
+    // Сбрасываем input
+    if (this.fileInput) this.fileInput.value = '';
+  }
+  
+  isImageFile(file) {
+    return file && file.type.startsWith('image/');
+  }
+  
+  previewImage(file) {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      // Создаем миниатюру изображения
+      this.createImagePreview(file, e.target.result);
+      
+      // Добавляем в список ожидающих файлов
+      this.pendingFiles.push({
+        file: file,
+        dataUrl: e.target.result,
+        type: 'image'
+      });
+    };
+    
+    reader.onerror = () => {
+      console.error('Ошибка чтения файла:', file.name);
+    };
+    
+    reader.readAsDataURL(file);
+  }
+  
+  previewFile(file) {
+    // Для не-изображений просто добавляем информацию
+    this.pendingFiles.push({
+      file: file,
+      name: file.name,
+      size: file.size,
+      type: 'file'
+    });
+    
+    // Можно показать уведомление
+    console.log('Файл добавлен:', file.name);
+  }
+  
+  createImagePreview(file, dataUrl) {
+    if (!this.messageInput) return;
+    
+    // Создаем элемент предпросмотра
+    const preview = document.createElement('div');
+    preview.className = 'image-preview';
+    
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.alt = file.name;
+    
+    const info = document.createElement('div');
+    info.className = 'image-info';
+    info.innerHTML = `
+      <span>${file.name}</span>
+      <small>${this.formatFileSize(file.size)}</small>
+    `;
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-preview';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.addEventListener('click', () => {
+      preview.remove();
+      // Удаляем из pendingFiles
+      const index = this.pendingFiles.findIndex(f => f.file === file);
+      if (index > -1) this.pendingFiles.splice(index, 1);
+    });
+    
+    preview.appendChild(img);
+    preview.appendChild(info);
+    preview.appendChild(removeBtn);
+    
+    // Вставляем перед полем ввода
+    this.messageInput.parentNode.insertBefore(preview, this.messageInput);
+  }
+  
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+  
+  /**
+   * Отправка файлов через WebSocket
+   */
+  sendPendingFiles(chatId) {
+    if (this.pendingFiles.length === 0) return;
+    
+    const wsManager = getWebSocketManager();
+    if (!wsManager || !wsManager.isConnected) return;
+    
+    this.pendingFiles.forEach(fileData => {
+      if (fileData.type === 'image') {
+        const message = {
+          type: 'image',
+          data: fileData.dataUrl,
+          filename: fileData.file.name,
+          size: fileData.file.size,
+          timestamp: Date.now(),
+          chatId: chatId
+        };
+        wsManager.send(message);
+      }
+    });
+    
+    // Очищаем список
+    this.pendingFiles = [];
+    
+    // Удаляем все превью
+    document.querySelectorAll('.image-preview').forEach(el => el.remove());
+  }
+  
+  /**
+   * Очистка всех файлов
+   */
+  clearAll() {
+    this.pendingFiles = [];
+    document.querySelectorAll('.image-preview').forEach(el => el.remove());
   }
 }
 

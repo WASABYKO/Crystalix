@@ -2632,5 +2632,65 @@
     "timestamp": "2026-02-02T20:23:25.350Z",
     "createdAt": "2026-02-02T20:23:25.350Z",
     "status": "sent"
+  },
+  {
+    "id": "msg_1770065951333",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "erger",
+    "type": "text",
+    "timestamp": "2026-02-02T20:59:11.338Z",
+    "createdAt": "2026-02-02T20:59:11.338Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770065984524",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ghbdtn",
+    "type": "text",
+    "timestamp": "2026-02-02T20:59:44.524Z",
+    "createdAt": "2026-02-02T20:59:44.524Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770066002632",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "нет",
+    "type": "text",
+    "timestamp": "2026-02-02T21:00:02.632Z",
+    "createdAt": "2026-02-02T21:00:02.632Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770066009133",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "туту",
+    "type": "text",
+    "timestamp": "2026-02-02T21:00:09.133Z",
+    "createdAt": "2026-02-02T21:00:09.133Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770066010433",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "тутутут",
+    "type": "text",
+    "timestamp": "2026-02-02T21:00:10.433Z",
+    "createdAt": "2026-02-02T21:00:10.433Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770066012455",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "аулцщх",
+    "type": "text",
+    "timestamp": "2026-02-02T21:00:12.455Z",
+    "createdAt": "2026-02-02T21:00:12.455Z",
+    "status": "sent"
   }
 ]

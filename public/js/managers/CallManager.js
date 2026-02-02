@@ -721,7 +721,7 @@ class CallManager {
     attachLocalStream() {
         if (!this.localStream) return;
         
-        const selfVideo = document.querySelector('.video-call-self video');
+        const selfVideo = document.getElementById('localVideo');
         if (selfVideo) {
             selfVideo.srcObject = this.localStream;
             selfVideo.style.display = this.isVideo && !this.isCameraOff ? 'block' : 'none';
@@ -731,10 +731,17 @@ class CallManager {
     attachRemoteStream() {
         if (!this.remoteStream) return;
         
-        const remoteVideo = document.querySelector('.video-call-main video');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const noVideoPlaceholder = document.getElementById('noVideoPlaceholder');
+        
         if (remoteVideo) {
             remoteVideo.srcObject = this.remoteStream;
             remoteVideo.style.display = 'block';
+        }
+        
+        // Скрываем плейсхолдер когда есть видео
+        if (noVideoPlaceholder) {
+            noVideoPlaceholder.style.display = 'none';
         }
     }
     
