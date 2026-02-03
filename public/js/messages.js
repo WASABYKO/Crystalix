@@ -1055,73 +1055,92 @@ class UIManager {
     const input = document.getElementById('messageInput');
     const text = input?.value.trim();
     
-    if (!text || !this.activeChatId) {
-      console.warn('[sendMessage] Нет текста или activeChatId');
+    // Проверяем есть ли файлы для отправки
+    const hasPendingFiles = this.fileUploader?.pendingFiles?.length > 0;
+    
+    // Если нет текста, нет файлов и нет activeChatId - ошибка
+    if (!text && !hasPendingFiles && !this.activeChatId) {
+      console.warn('[sendMessage] Нет текста, файлов или activeChatId');
+      return;
+    }
+    
+    // Если есть activeChatId, продолжаем
+    if (!this.activeChatId) {
+      console.warn('[sendMessage] Нет activeChatId');
       return;
     }
     
     try {
-      // Оптимистичное добавление сообщения
-      if (!this.messages[this.activeChatId]) {
-        this.messages[this.activeChatId] = [];
+      // Оптимистичное добавление текстового сообщения
+      if (text) {
+        if (!this.messages[this.activeChatId]) {
+          this.messages[this.activeChatId] = [];
+        }
+        
+        const tempId = 'temp_' + Date.now();
+        const newMessage = {
+          id: tempId,
+          senderId: this.currentUser?.id,
+          content: text,
+          createdAt: Date.now(),
+          status: 'sending'
+        };
+        
+        this.messages[this.activeChatId].push(newMessage);
+        this.renderMessages(this.activeChatId);
+        this.renderChatsList();
       }
       
-      const tempId = 'temp_' + Date.now();
-      const newMessage = {
-        id: tempId,
-        senderId: this.currentUser?.id,
-        content: text,
-        createdAt: Date.now(),
-        status: 'sending'
-      };
+      // Отправляем файлы если есть
+      if (hasPendingFiles) {
+        this.fileUploader.sendPendingFiles(this.activeChatId);
+      }
       
-      this.messages[this.activeChatId].push(newMessage);
-      this.renderMessages(this.activeChatId);
-      this.renderChatsList();
-      
-      // Пытаемся отправить через WebSocket (только если авторизованы)
-      if (this.wsManager.isConnected && this.wsManager.isAuthorized) {
-        this.wsManager.send({
-          type: 'message',
-          chatId: this.activeChatId,
-          content: text,
-          messageType: 'text'
-        });
-        
-        // Обновляем статус на "отправлено" (подтверждение придет от сервера)
-        newMessage.status = 'sent';
-        input.value = '';
-        this.stopTyping();
-        
-        console.log('[sendMessage] Отправлено через WebSocket');
-      } else {
-        // WebSocket не авторизован, используем HTTP API
-        console.log('[sendMessage] WebSocket не авторизован, используем HTTP API');
-        const data = await ChatService.sendMessage(this.activeChatId, text);
-        
-        if (data.success) {
-          // Заменяем временное сообщение на реальное
-          const index = this.messages[this.activeChatId].findIndex(m => m.id === tempId);
-          if (index !== -1) {
-            this.messages[this.activeChatId][index] = {
-              ...newMessage,
-              id: data.messageId,
-              status: 'sent'
-            };
-          }
+      // Пытаемся отправить текст через WebSocket (только если есть текст)
+      if (text) {
+        if (this.wsManager.isConnected && this.wsManager.isAuthorized) {
+          this.wsManager.send({
+            type: 'message',
+            chatId: this.activeChatId,
+            content: text,
+            messageType: 'text'
+          });
           
-          this.saveMessagesToLocalStorage(this.activeChatId);
-          this.renderMessages(this.activeChatId);
-          this.renderChatsList();
+          // Обновляем статус на "отправлено"
+          newMessage.status = 'sent';
           input.value = '';
           this.stopTyping();
           
-          console.log('[sendMessage] Отправлено через HTTP API');
+          console.log('[sendMessage] Текст отправлен через WebSocket');
         } else {
-          // Ошибка - удаляем временное сообщение
-          this.messages[this.activeChatId] = this.messages[this.activeChatId].filter(m => m.id !== tempId);
-          this.renderMessages(this.activeChatId);
-          this.showToast('Не удалось отправить сообщение', 'error');
+          // WebSocket не авторизован, используем HTTP API
+          console.log('[sendMessage] WebSocket не авторизован, используем HTTP API');
+          const data = await ChatService.sendMessage(this.activeChatId, text);
+          
+          if (data.success) {
+            // Заменяем временное сообщение на реальное
+            const index = this.messages[this.activeChatId].findIndex(m => m.id === tempId);
+            if (index !== -1) {
+              this.messages[this.activeChatId][index] = {
+                ...newMessage,
+                id: data.messageId,
+                status: 'sent'
+              };
+            }
+            
+            this.saveMessagesToLocalStorage(this.activeChatId);
+            this.renderMessages(this.activeChatId);
+            this.renderChatsList();
+            input.value = '';
+            this.stopTyping();
+            
+            console.log('[sendMessage] Отправлено через HTTP API');
+          } else {
+            // Ошибка - удаляем временное сообщение
+            this.messages[this.activeChatId] = this.messages[this.activeChatId].filter(m => m.id !== tempId);
+            this.renderMessages(this.activeChatId);
+            this.showToast('Не удалось отправить сообщение', 'error');
+          }
         }
       }
     } catch (error) {

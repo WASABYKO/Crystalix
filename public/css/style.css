@@ -1238,6 +1238,438 @@ body {
         flex-direction: column;
     }
 }
+/* =============== СТИЛИ ДЛЯ HEADER И НАВИГАЦИИ =============== */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    transform: translateY(0);
+}
+
+/* Хедер показывается при скролле вверх */
+.site-header.visible {
+    transform: translateY(0);
+}
+
+/* Хедер прячется при скролле вниз */
+.site-header.hidden {
+    transform: translateY(-100%);
+}
+
+/* Тень при скролле */
+.site-header.scrolled {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: rgba(10, 10, 10, 0.95);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+    gap: 2rem;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.header-logo i {
+    font-size: 1.75rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-logo span {
+    background: linear-gradient(135deg, var(--text), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-logo:hover {
+    transform: scale(1.02);
+}
+
+/* Навигация */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-link:hover::before {
+    left: 100%;
+}
+
+.nav-link i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-link:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 204, 255, 0.2);
+}
+
+.nav-link:hover i {
+    transform: scale(1.1);
+    color: var(--primary);
+}
+
+.nav-link.active {
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.15), rgba(0, 255, 170, 0.1));
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 4px 20px rgba(0, 204, 255, 0.15);
+}
+
+.nav-link.active i {
+    color: var(--primary);
+}
+
+/* Действия в хедере */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+    font-size: 1rem;
+}
+
+/* Мобильная хедер */
+.mobile-header {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .site-header {
+        display: none;
+    }
+    
+    .mobile-header {
+        display: flex;
+    }
+}
+
+/* Кнопка "Кабинет" - большая кнопка */
+.btn-cabinet {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(0, 204, 255, 0.3);
+}
+
+.btn-cabinet i {
+    font-size: 1.1rem;
+}
+
+.btn-cabinet:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 204, 255, 0.4);
+    color: white;
+}
+
+/* Кнопка "Чаты" */
+.btn-chats {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.1), rgba(0, 255, 170, 0.1));
+    border: 1px solid rgba(0, 204, 255, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.btn-chats i {
+    font-size: 1.1rem;
+}
+
+.btn-chats:hover {
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.2), rgba(0, 255, 170, 0.2));
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 204, 255, 0.2);
+    color: var(--primary);
+}
+
+/* Кнопка "Тарифы" */
+.btn-tariffs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, rgba(255, 165, 2, 0.1), rgba(255, 71, 87, 0.1));
+    border: 1px solid rgba(255, 165, 2, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--warning);
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.btn-tariffs i {
+    font-size: 1.1rem;
+}
+
+.btn-tariffs:hover {
+    background: linear-gradient(135deg, rgba(255, 165, 2, 0.2), rgba(255, 71, 87, 0.2));
+    border-color: var(--warning);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 165, 2, 0.2);
+    color: var(--warning);
+}
+
+/* Кнопка входа/регистрации */
+.btn-enter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-enter::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-enter:hover::before {
+    left: 100%;
+}
+
+.btn-enter i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-enter:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+    color: white;
+}
+
+.btn-enter:hover i {
+    transform: scale(1.1);
+}
+
+.btn-enter:active {
+    transform: translateY(0);
+}
+
+.btn-enter.btn-block {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Стили для кнопок входа в auth.html */
+.auth-header .btn-enter {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+}
+
+.auth-header .btn-enter i {
+    font-size: 1rem;
+}
+
+/* Кнопка выхода */
+.btn-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--danger);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+}
+
+.btn-exit i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-exit:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+    border-color: var(--danger);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+    color: var(--danger);
+}
+
+.btn-exit:hover i {
+    transform: translateX(-2px);
+}
+
+.btn-exit:active {
+    transform: translateY(0);
+}
+
+.btn-exit.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.btn-exit.btn-sm i {
+    font-size: 0.9rem;
+}
+
+/* Панель быстрых ссылок */
+.quick-nav {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.quick-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+}
+
+.quick-nav-btn i {
+    font-size: 0.95rem;
+    transition: transform 0.3s ease;
+}
+
+.quick-nav-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--primary);
+    color: var(--text);
+    transform: translateY(-2px);
+}
+
+.quick-nav-btn:hover i {
+    transform: scale(1.1);
+    color: var(--primary);
+}
+
+.quick-nav-btn.active {
+    background: linear-gradient(135deg, rgba(0, 204, 255, 0.15), rgba(0, 255, 170, 0.1));
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 /* Стили для отображения ID */
 .user-id-container {
     background: var(--darker-bg);

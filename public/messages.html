@@ -63,76 +63,6 @@
         .avatar-gradient-6 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
         .avatar-gradient-7 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
         .avatar-gradient-8 { background: linear-gradient(135deg, #14b8a6, #0d9488); }
-        
-        /* Кнопка возврата в личный кабинет */
-        .cabinet-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            font-family: inherit;
-            text-decoration: none;
-        }
-        
-        .cabinet-btn:hover {
-            background: var(--surface-hover);
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateX(-2px);
-        }
-        
-        .cabinet-btn i {
-            font-size: 14px;
-        }
-        
-        /* Кнопка профиля */
-        .profile-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-        }
-        
-        .profile-btn:hover {
-            background: var(--surface-hover);
-        }
-        
-        .profile-btn .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        .profile-btn .name {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-        }
-        
-        .profile-btn .icon {
-            color: var(--text-muted);
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
@@ -178,11 +108,6 @@
             <div class="sidebar-header">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 style="margin: 0;"><i class="fas fa-comment-dots"></i> Мессенджер</h2>
-                    <!-- Кнопка возврата в личный кабинет -->
-                    <a href="/dashboard.html" class="cabinet-btn" title="Вернуться в личный кабинет" aria-label="Вернуться в личный кабинет">
-                        <i class="fas fa-user"></i>
-                        <span>Кабинет</span>
-                    </a>
                 </div>
                 <div class="sidebar-actions">
                     <button id="newChatBtn" class="btn btn-primary btn-sm" aria-label="Создать новый чат">
@@ -301,7 +226,7 @@
                     <i class="fas fa-comments"></i>
                     <h3>Ваши чаты</h3>
                     <p>Выберите чат из списка слева или начните новый диалог</p>
-                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="document.getElementById('newChatBtn').click()">
                             <i class="fas fa-plus"></i> Новый чат
                         </button>
@@ -876,8 +801,6 @@
     <script src="/js/components/call-notification.js"></script>
     <script src="/js/components/call-status-bar.js"></script>
     <script src="/js/components/call-history.js"></script>
-
-    <script src="/js/messages.js"></script>
     
     <!-- Привязка событий кнопок звонков -->
     <script>

@@ -2692,5 +2692,315 @@
     "timestamp": "2026-02-02T21:00:12.455Z",
     "createdAt": "2026-02-02T21:00:12.455Z",
     "status": "sent"
+  },
+  {
+    "id": "msg_1770082622937",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "првиет",
+    "type": "text",
+    "timestamp": "2026-02-03T01:37:02.937Z",
+    "createdAt": "2026-02-03T01:37:02.937Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087439973",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "ац",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:19.973Z",
+    "createdAt": "2026-02-03T02:57:19.973Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087444771",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769880646655_b0zlyz0k",
+    "content": "ацца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:24.771Z",
+    "createdAt": "2026-02-03T02:57:24.771Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087450698",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:30.698Z",
+    "createdAt": "2026-02-03T02:57:30.698Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087450713",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:30.713Z",
+    "createdAt": "2026-02-03T02:57:30.713Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087452284",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:32.284Z",
+    "createdAt": "2026-02-03T02:57:32.284Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087452298",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:32.298Z",
+    "createdAt": "2026-02-03T02:57:32.298Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087453234",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:33.234Z",
+    "createdAt": "2026-02-03T02:57:33.234Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087453247",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:33.247Z",
+    "createdAt": "2026-02-03T02:57:33.247Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087453752",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:33.752Z",
+    "createdAt": "2026-02-03T02:57:33.752Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087453766",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "ца",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:33.766Z",
+    "createdAt": "2026-02-03T02:57:33.766Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087467821",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:47.821Z",
+    "createdAt": "2026-02-03T02:57:47.821Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087467834",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:47.834Z",
+    "createdAt": "2026-02-03T02:57:47.834Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087475789",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:55.789Z",
+    "createdAt": "2026-02-03T02:57:55.789Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087475800",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:57:55.800Z",
+    "createdAt": "2026-02-03T02:57:55.800Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087483015",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:03.015Z",
+    "createdAt": "2026-02-03T02:58:03.015Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087483026",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:03.026Z",
+    "createdAt": "2026-02-03T02:58:03.026Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484023",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.023Z",
+    "createdAt": "2026-02-03T02:58:04.023Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484041",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.041Z",
+    "createdAt": "2026-02-03T02:58:04.041Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484239",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.239Z",
+    "createdAt": "2026-02-03T02:58:04.239Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484251",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.251Z",
+    "createdAt": "2026-02-03T02:58:04.251Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484450",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.450Z",
+    "createdAt": "2026-02-03T02:58:04.450Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484466",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.466Z",
+    "createdAt": "2026-02-03T02:58:04.466Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484605",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.605Z",
+    "createdAt": "2026-02-03T02:58:04.605Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484619",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.619Z",
+    "createdAt": "2026-02-03T02:58:04.619Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484766",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.766Z",
+    "createdAt": "2026-02-03T02:58:04.766Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484779",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.779Z",
+    "createdAt": "2026-02-03T02:58:04.779Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484945",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.945Z",
+    "createdAt": "2026-02-03T02:58:04.945Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087484964",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "жа жацуацуацуацуацуацу",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:04.964Z",
+    "createdAt": "2026-02-03T02:58:04.964Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087488131",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "цуа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:08.131Z",
+    "createdAt": "2026-02-03T02:58:08.131Z",
+    "status": "sent"
+  },
+  {
+    "id": "msg_1770087488145",
+    "chatId": "chat_1769883847527",
+    "senderId": "user_1769866446241_mjw5hjix",
+    "content": "цуа",
+    "type": "text",
+    "timestamp": "2026-02-03T02:58:08.145Z",
+    "createdAt": "2026-02-03T02:58:08.145Z",
+    "status": "sent"
   }
 ]

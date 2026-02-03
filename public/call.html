@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видеозвонок</title>
+    <link rel="stylesheet" href="css/call-room.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="callRoom" class="call-room">
+        <!-- Основное видео собеседника -->
+        <div class="remote-video-container">
+            <video id="remoteVideo" class="remote-video" autoplay playsinline></video>
+
+            <!-- Заглушка когда нет видео -->
+            <div id="remotePlaceholder" class="remote-placeholder hidden">
+                <div class="avatar-large">
+                    <span id="avatarInitial">?</span>
+                </div>
+                <span id="remoteName" class="remote-name"></span>
+            </div>
+
+            <!-- Информация о собеседнике -->
+            <div class="remote-info">
+                <span id="remoteNameDisplay" class="remote-name-display"></span>
+                <span id="connectionStatus" class="connection-status">
+                    <i class="fas fa-wifi"></i>
+                    <span>Подключение...</span>
+                </span>
+            </div>
+
+            <!-- Индикатор отключенного видео у собеседника -->
+            <div id="remoteVideoOffIndicator" class="video-off-indicator hidden">
+                <i class="fas fa-video-slash"></i>
+                <span>Камера выключена</span>
+            </div>
+        </div>
+
+        <!-- Локальное видео (PIP) -->
+        <div class="local-video-container">
+            <video id="localVideo" class="local-video" autoplay playsinline muted></video>
+
+            <!-- Индикатор отключенного микрофона -->
+            <div id="localAudioOffIndicator" class="audio-off-indicator hidden">
+                <i class="fas fa-microphone-slash"></i>
+            </div>
+
+            <!-- Индикатор отключенной камеры -->
+            <div id="localVideoOffIndicator" class="video-off-indicator small hidden">
+                <i class="fas fa-video-slash"></i>
+            </div>
+        </div>
+
+        <!-- Таймер звонка -->
+        <div class="call-timer-container">
+            <i class="fas fa-phone-alt"></i>
+            <span id="callTimer">00:00</span>
+        </div>
+
+        <!-- Панель управления -->
+        <div id="controlPanel" class="control-panel">
+            <div class="control-buttons">
+                <!-- Микрофон -->
+                <button id="micBtn" class="control-btn" title="Микрофон">
+                    <i class="fas fa-microphone"></i>
+                </button>
+
+                <!-- Камера -->
+                <button id="cameraBtn" class="control-btn" title="Камера">
+                    <i class="fas fa-video"></i>
+                </button>
+
+                <!-- Завершить звонок -->
+                <button id="endCallBtn" class="control-btn end-call-btn" title="Завершить звонок">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="callLoader" class="call-loader hidden">
+            <div class="loader-spinner"></div>
+            <p>Устанавливаем соединение...</p>
+        </div>
+    </div>
+
+    <script src="js/managers/CallManager.js"></script>
+    <script src="js/call-room.js"></script>
+</body>
+</html>

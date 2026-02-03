@@ -5,6 +5,10 @@
 const HeaderComponent = (function() {
     'use strict';
 
+    let lastScrollTop = 0;
+    let scrollThreshold = 10;
+    let isInitialized = false;
+
     // Инициализация
     function init() {
         const headerElement = document.getElementById('siteHeader');
@@ -12,6 +16,8 @@ const HeaderComponent = (function() {
             console.warn('Header element not found');
             return;
         }
+
+        isInitialized = true;
 
         // Проверка авторизации
         const currentUser = typeof HashStorage !== 'undefined' ? HashStorage.getCurrentUser() : null;
@@ -45,13 +51,15 @@ const HeaderComponent = (function() {
                                     <div class="user-avatar" style="background: ${currentUser.avatar_color || '#00ccff'}">
                                         ${(currentUser.name || 'U').charAt(0).toUpperCase()}
                                     </div>
-                                    <button class="btn btn-outline btn-sm" id="logoutBtn">
-                                        <i class="fas fa-sign-out-alt"></i> Выход
+                                    <button class="btn-exit btn-sm" id="logoutBtn">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Выход</span>
                                     </button>
                                 </div>
                             ` : `
-                                <a href="/auth.html" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-sign-in-alt"></i> Вход
+                                <a href="/auth.html" class="btn-enter">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span>Вход</span>
                                 </a>
                             `}
                         </div>
@@ -65,6 +73,47 @@ const HeaderComponent = (function() {
         if (logoutBtn) {
             logoutBtn.addEventListener('click', handleLogout);
         }
+
+        // Инициализировать скролл-хендлер
+        initScrollHandler();
+    }
+
+    // Обработка скролла - хедер прячется при скролле вниз, показывается при скролле вверх
+    function initScrollHandler() {
+        const headerElement = document.getElementById('siteHeader');
+        if (!headerElement) return;
+
+        let lastScrollTop = 0;
+        const delta = 5;
+
+        function handleScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Добавить класс scrolled при наличии скролла
+            if (scrollTop > 50) {
+                headerElement.classList.add('scrolled');
+            } else {
+                headerElement.classList.remove('scrolled');
+            }
+
+            // Прячем хедер при скролле вниз, показываем при скролле вверх
+            if (Math.abs(lastScrollTop - scrollTop) <= delta) return;
+
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Скролл вниз - прячем хедер
+                headerElement.classList.remove('visible');
+                headerElement.classList.add('hidden');
+            } else {
+                // Скролл вверх - показываем хедер
+                headerElement.classList.remove('hidden');
+                headerElement.classList.add('visible');
+            }
+
+            lastScrollTop = scrollTop;
+        }
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Проверить начальное состояние
     }
 
     // Выход из системы

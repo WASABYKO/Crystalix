@@ -725,7 +725,20 @@ class CallManager {
         if (selfVideo) {
             selfVideo.srcObject = this.localStream;
             selfVideo.style.display = this.isVideo && !this.isCameraOff ? 'block' : 'none';
+            
+            // Пытаемся воспроизвести видео
+            const playPromise = selfVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.warn('[CallManager] Не удалось воспроизвести локальное видео:', error);
+                });
+            }
         }
+        
+        // Отправляем событие для CallRoom и других компонентов
+        window.dispatchEvent(new CustomEvent('callLocalStreamUpdate', {
+            detail: { stream: this.localStream }
+        }));
     }
     
     attachRemoteStream() {
@@ -737,12 +750,25 @@ class CallManager {
         if (remoteVideo) {
             remoteVideo.srcObject = this.remoteStream;
             remoteVideo.style.display = 'block';
+            
+            // Пытаемся воспроизвести видео
+            const playPromise = remoteVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.warn('[CallManager] Не удалось воспроизвести удалённое видео:', error);
+                });
+            }
         }
         
         // Скрываем плейсхолдер когда есть видео
         if (noVideoPlaceholder) {
             noVideoPlaceholder.style.display = 'none';
         }
+        
+        // Отправляем событие для CallRoom и других компонентов
+        window.dispatchEvent(new CustomEvent('callRemoteStreamUpdate', {
+            detail: { stream: this.remoteStream }
+        }));
     }
     
     showCallEndedNotification(duration) {
